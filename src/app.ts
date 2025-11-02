@@ -1,8 +1,10 @@
 import cors from "cors";
 import express, { Application, Request, Response } from "express";
 import helmet from "helmet";
+import { Config } from "./config";
 import { requestLogger } from "./middlewares/requestLogger";
 import router from "./routes/index";
+import ApiError from "./utils/apiError";
 import logger from "./utils/logger";
 
 const app: Application = express();
@@ -49,9 +51,22 @@ app.use((req: Request, res: Response) => {
 
 // Error Handler
 app.use((err: Error, req: Request, res: Response) => {
-  logger.error(`[Error] ${err.message}, Stack: ${err.stack}`);
-  res.status(500).json({
-    message: "Internal Server Error",
+  if (err instanceof ApiError) {
+    logger.warn(`[ApiError] ${err.statusCode} - ${err.message}`);
+    return res.status(err.statusCode).json({
+      success: false,
+      message: err.message,
+    });
+  }
+
+  logger.error(`[UnhandledError] ${err.message}, Stack: ${err.stack}`);
+
+  // Do not leak error details in production
+  const message = Config.IS_PRODUCTION ? "Internal Server Error" : err.message;
+
+  return res.status(500).json({
+    success: false,
+    message,
   });
 });
 
