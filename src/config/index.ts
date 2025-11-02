@@ -13,8 +13,9 @@ const config = {
   DB_URI: process.env.DB_URI || "mongodb://localhost:27017/backend_template",
 
   // --- Security ---
-  // JWT_SECRET: process.env.JWT_SECRET,
-  // JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1d',
+  BCRYPT_SALT_ROUNDS: parseInt(process.env.BCRYPT_SALT_ROUNDS || "10", 10),
+  JWT_SECRET: process.env.JWT_SECRET,
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || "7d",
 
   // --- Mail Service (Nodemailer) ---
   // MAIL_HOST: process.env.MAIL_HOST,
