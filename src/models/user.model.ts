@@ -1,5 +1,9 @@
 import bcrypt from "bcryptjs";
-import { Document, Schema, model } from "mongoose";
+import { Schema, model } from "mongoose";
+import MongooseDelete, {
+  SoftDeleteDocument,
+  SoftDeleteModel,
+} from "mongoose-delete";
 import { Config } from "../config";
 
 export enum UserRole {
@@ -7,7 +11,7 @@ export enum UserRole {
   ADMIN = "admin",
 }
 
-export interface IUser extends Document {
+export interface IUser extends SoftDeleteDocument {
   id: string;
   name: string;
   email: string;
@@ -62,6 +66,9 @@ const userSchema = new Schema<IUser>(
 
         delete (ret as any).__v;
         delete (ret as any)._id;
+
+        delete (ret as any).deleted;
+        delete (ret as any).deletedAt;
       },
     },
   }
@@ -93,5 +100,12 @@ userSchema.methods.comparePassword = async function (
   return bcrypt.compare(candidatePassword, user.password);
 };
 
-const UserModel = model<IUser>("User", userSchema);
+// -- Plugin for Soft Delete --
+userSchema.plugin(MongooseDelete, {
+  overrideMethods: "all", // Makes find(), findOne(), etc. exclude deleted docs
+  deletedAt: true, // Adds a deletedAt field
+  deletedBy: false,
+});
+
+const UserModel = model<IUser, SoftDeleteModel<IUser>>("User", userSchema);
 export default UserModel;

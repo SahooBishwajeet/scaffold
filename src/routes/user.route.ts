@@ -1,31 +1,28 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
+import * as userController from "../controllers/user.controller";
 import { authorizeRoles, protect } from "../middlewares/auth.middleware";
 import { UserRole } from "../models/user.model";
-import ApiResponse from "../utils/apiResponse";
 
 const router = Router();
 
-router.get("/me", protect, (req: Request, res: Response) => {
-  res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        { user: req.user },
-        "User profile fetched successfully"
-      )
-    );
-});
+router.use(protect);
 
-router.get(
-  "/admin-test",
-  protect,
-  authorizeRoles(UserRole.ADMIN),
-  (req: Request, res: Response) => {
-    res
-      .status(200)
-      .json(new ApiResponse(200, null, "Admin access granted successfully"));
-  }
-);
+// --- User-specific route ---
+router.get("/me", userController.getMe);
+router.put("/me", userController.updateMyProfile);
+router.delete("/me", userController.deleteMyAccount);
+router.put("/me/password", userController.changeMyPassword);
+
+// --- Admin-only routes ---
+router.use(authorizeRoles(UserRole.ADMIN));
+
+router.get("/", userController.getAllUsers);
+router.get("/deleted", userController.getDeletedUsers);
+
+router.get("/:id", userController.getUserById);
+router.put("/:id", userController.updateUser);
+router.delete("/:id", userController.deleteUser);
+
+router.put("/:id/restore", userController.restoreUser);
 
 export default router;
