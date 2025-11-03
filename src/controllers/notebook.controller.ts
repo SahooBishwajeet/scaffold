@@ -117,8 +117,6 @@ export const restoreNotebook = asyncHandler(
  */
 export const createNotebook = asyncHandler(
   async (req: Request, res: Response) => {
-    console.log(req.user);
-
     if (!req.user) {
       throw new ApiError(401, "Not authorized");
     }

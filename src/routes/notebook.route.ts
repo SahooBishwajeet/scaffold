@@ -1,4 +1,5 @@
 import { Router } from "express";
+import * as noteController from "../controllers/note.controller";
 import * as notebookController from "../controllers/notebook.controller";
 import { authorizeRoles, protect } from "../middlewares/auth.middleware";
 import { UserRole } from "../models/user.model";
@@ -10,6 +11,9 @@ router.use(protect);
 // -- User-specific route --
 router.post("/", notebookController.createNotebook);
 router.get("/", notebookController.getMyNotebooks);
+
+router.post("/:notebookId/notes", noteController.createNote);
+router.get("/:notebookId/notes", noteController.getNotesInNotebook);
 
 router.get("/:id", notebookController.getMyNotebookById);
 router.put("/:id", notebookController.updateMyNotebookById);

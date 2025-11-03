@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { getNotesForUser } from "../controllers/note.controller";
 import { getNotebooksForUser } from "../controllers/notebook.controller";
 import * as userController from "../controllers/user.controller";
 import { authorizeRoles, protect } from "../middlewares/auth.middleware";
@@ -21,6 +22,7 @@ router.get("/", userController.getAllUsers);
 router.get("/deleted", userController.getDeletedUsers);
 
 router.get("/:userId/notebooks", getNotebooksForUser);
+router.get("/:userId/notes", getNotesForUser);
 
 router.get("/:id", userController.getUserById);
 router.put("/:id", userController.updateUser);

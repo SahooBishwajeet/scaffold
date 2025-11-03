@@ -20,7 +20,8 @@ export const getAllNotebooks = async (): Promise<INotebook[]> => {
   return notebooks;
 };
 
-/** Get all notebooks for a specific user by user ID
+/**
+ * Get all notebooks for a specific user by user ID
  * @param userId - The ID of the user
  * @returns The list of notebooks for the user
  */
@@ -39,7 +40,8 @@ export const getNotebooksForUser = async (
   return notebooks;
 };
 
-/** Admin update any notebook by ID
+/**
+ * Admin update any notebook by ID
  * @param notebookId - The ID of the notebook
  * @param updateBody - The fields to update
  * @returns The updated notebook
@@ -60,7 +62,8 @@ export const adminUpdateNotebook = async (
   return notebook;
 };
 
-/** Admin delete any notebook by ID
+/**
+ * Admin delete any notebook by ID
  * @param notebookId - The ID of the notebook
  */
 export const adminDeleteNotebook = async (
@@ -75,7 +78,8 @@ export const adminDeleteNotebook = async (
   await notebook.delete();
 };
 
-/** Get all deleted notebooks from all users
+/**
+ * Get all deleted notebooks from all users
  * @returns The list of deleted notebooks
  */
 export const getDeletedNotebooks = async (): Promise<INotebook[]> => {
@@ -86,7 +90,8 @@ export const getDeletedNotebooks = async (): Promise<INotebook[]> => {
   return notebooks;
 };
 
-/** Restore a deleted notebook by ID
+/**
+ * Restore a deleted notebook by ID
  * @param notebookId - The ID of the notebook to restore
  * @returns The restored notebook
  */
