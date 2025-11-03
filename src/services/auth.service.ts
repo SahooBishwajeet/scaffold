@@ -12,7 +12,6 @@ interface IAuthResponse {
  * @param userData - Name, Email and Password of the user to be registered
  * @returns The new user and a JWT token
  */
-
 export const register = async (
   userData: Pick<IUser, "name" | "email" | "password">
 ): Promise<IAuthResponse> => {

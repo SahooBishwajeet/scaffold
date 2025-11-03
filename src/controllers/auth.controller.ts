@@ -6,9 +6,11 @@ import {
 import ApiResponse from "../utils/apiResponse";
 import { asyncHandler } from "../utils/asyncHandler";
 
-// @desc   Register a new user
-// @route  POST /api/v1/auth/register
-// @access Public
+/**
+ * @desc   Register a new user
+ * @route  POST /api/v1/auth/register
+ * @access Public
+ */
 export const registerUser = asyncHandler(
   async (req: Request, res: Response) => {
     const { name, email, password } = req.body;
@@ -27,9 +29,11 @@ export const registerUser = asyncHandler(
   }
 );
 
-// @desc   Login user
-// @route  POST /api/v1/auth/login
-// @access Public
+/**
+ * @desc   Login user
+ * @route  POST /api/v1/auth/login
+ * @access Public
+ */
 export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
 

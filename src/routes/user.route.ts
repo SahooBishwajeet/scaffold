@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { getNotebooksForUser } from "../controllers/notebook.controller";
 import * as userController from "../controllers/user.controller";
 import { authorizeRoles, protect } from "../middlewares/auth.middleware";
 import { UserRole } from "../models/user.model";
@@ -18,6 +19,8 @@ router.use(authorizeRoles(UserRole.ADMIN));
 
 router.get("/", userController.getAllUsers);
 router.get("/deleted", userController.getDeletedUsers);
+
+router.get("/:userId/notebooks", getNotebooksForUser);
 
 router.get("/:id", userController.getUserById);
 router.put("/:id", userController.updateUser);
