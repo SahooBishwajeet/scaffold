@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { getNotesForUser } from "../controllers/note.controller";
-import { getNotebooksForUser } from "../controllers/notebook.controller";
+import * as noteController from "../controllers/note.controller";
+import * as notebookController from "../controllers/notebook.controller";
 import * as userController from "../controllers/user.controller";
 import { authorizeRoles, protect } from "../middlewares/auth.middleware";
 import { UserRole } from "../models/user.model";
@@ -20,9 +20,15 @@ router.use(authorizeRoles(UserRole.ADMIN));
 
 router.get("/", userController.getAllUsers);
 router.get("/deleted", userController.getDeletedUsers);
+router.get("/search", userController.adminSearchUsers);
 
-router.get("/:userId/notebooks", getNotebooksForUser);
-router.get("/:userId/notes", getNotesForUser);
+router.get("/:userId/notebooks", notebookController.getNotebooksForUser);
+router.get("/:userId/notes", noteController.getNotesForUser);
+router.post("/:userId/notes/search", noteController.adminSearchNotesForUser);
+router.post(
+  "/:userId/notebooks/search",
+  notebookController.adminSearchNotebooksForUser
+);
 
 router.get("/:id", userController.getUserById);
 router.put("/:id", userController.updateUser);

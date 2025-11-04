@@ -1,3 +1,4 @@
+import { FilterQuery } from "mongoose";
 import UserModel, { IUser } from "../models/user.model";
 import ApiError from "../utils/apiError";
 
@@ -135,4 +136,16 @@ export const changeMyPassword = async (
 
   user.password = newPassword;
   await user.save();
+};
+
+/**
+ * Search all users based on filter criteria
+ * @param filterQuery - The mongoose filter query object from filter builder
+ * @returns The list of users matching the criteria
+ */
+export const adminSearchUsers = async (
+  filterQuery: FilterQuery<any>
+): Promise<IUser[]> => {
+  const notes = await UserModel.find(filterQuery);
+  return notes;
 };

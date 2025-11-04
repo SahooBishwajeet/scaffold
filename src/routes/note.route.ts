@@ -9,6 +9,7 @@ router.use(protect);
 
 // -- User-specific route --
 router.get("/", noteController.getAllMyNotes);
+router.post("/search", noteController.searchMyNotes);
 
 router.get("/:noteId", noteController.getMyNoteById);
 router.put("/:noteId", noteController.updateMyNote);
@@ -22,6 +23,8 @@ router.use(authorizeRoles(UserRole.ADMIN));
 router.get("/all/notes", noteController.getAllNotes);
 router.get("/all/deleted", noteController.getDeletedNotes);
 router.put("/:noteId/restore", noteController.restoreNote);
+
+router.post("/admin/search", noteController.adminSearchAllNotes);
 
 router.get("/admin/:noteId", noteController.adminGetNoteById);
 router.put("/admin/:noteId", noteController.adminUpdateNote);

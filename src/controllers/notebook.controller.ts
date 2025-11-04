@@ -3,6 +3,19 @@ import * as notebookService from "../services/notebook.service";
 import ApiError from "../utils/apiError";
 import ApiResponse from "../utils/apiResponse";
 import { asyncHandler } from "../utils/asyncHandler";
+import {
+  buildMongoQuery,
+  FieldTypeMap,
+  FilterCondition,
+} from "../utils/filter";
+
+const notebookFieldTypeMap: FieldTypeMap = {
+  name: "string",
+  description: "string",
+  isPinned: "boolean",
+  createdAt: "date",
+  updatedAt: "date",
+};
 
 /**
  * @desc    Get all notebooks
@@ -217,5 +230,102 @@ export const deleteMyNotebookById = asyncHandler(
     res
       .status(200)
       .json(new ApiResponse(200, null, "Notebook deleted successfully"));
+  }
+);
+
+/**
+ * @desc    Search notebooks for the logged-in user based on filter criteria
+ * @route   POST /api/v1/notebooks/search
+ * @access  Protected
+ */
+export const searchMyNotebooks = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new ApiError(401, "Not authorized");
+    }
+
+    const { filter }: { filter: FilterCondition[] } = req.body;
+    const { query, error } = buildMongoQuery(filter, notebookFieldTypeMap);
+
+    if (error) {
+      throw new ApiError(400, `Invalid filter: ${error.message}`);
+    }
+
+    const notebooks = await notebookService.searchMyNotebooks(
+      req.user._id,
+      query || {}
+    );
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          notebooks,
+          "Filtered notebooks fetched successfully"
+        )
+      );
+  }
+);
+
+/**
+ * @desc    Search all notebooks from all users based on filter criteria
+ * @route   POST /api/v1/notebooks/admin/search
+ * @access  Admin
+ */
+export const adminSearchAllNotebooks = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { filter }: { filter: FilterCondition[] } = req.body;
+    const { query, error } = buildMongoQuery(filter, notebookFieldTypeMap);
+
+    if (error) {
+      throw new ApiError(400, `Invalid filter: ${error.message}`);
+    }
+
+    const notebooks = await notebookService.adminSearchAllNotebooks(
+      query || {}
+    );
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          notebooks,
+          "Filtered notebooks fetched successfully"
+        )
+      );
+  }
+);
+
+/**
+ * @desc    Search notebooks for a specific user by user ID based on filter criteria
+ * @route   POST /api/v1/users/:userId/notebooks/search
+ * @access  Admin
+ */
+export const adminSearchNotebooksForUser = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { userId } = req.params;
+    const { filter }: { filter: FilterCondition[] } = req.body;
+    const { query, error } = buildMongoQuery(filter, notebookFieldTypeMap);
+
+    if (error) {
+      throw new ApiError(400, `Invalid filter: ${error.message}`);
+    }
+
+    const notebooks = await notebookService.adminSearchNotebooksForUser(
+      userId,
+      query || {}
+    );
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          notebooks,
+          "Filtered notebooks fetched successfully"
+        )
+      );
   }
 );

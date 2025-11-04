@@ -1,3 +1,4 @@
+import { FilterQuery } from "mongoose";
 import NotebookModel, { INotebook } from "../models/notebook.model";
 import UserModel, { IUser } from "../models/user.model";
 import ApiError from "../utils/apiError";
@@ -204,4 +205,70 @@ export const deleteMyNotebook = async (
   const notebook = await getMyNotebookById(notebookId, userId);
 
   await notebook.delete();
+};
+
+/**
+ * Search notebooks for a user based on filter criteria
+ * @param userId - The ID of the user
+ * @param filterQuery - The mongoose filter query object from filter builder
+ * @returns The list of notebooks matching the criteria
+ */
+export const searchMyNotebooks = async (
+  userId: IUser["_id"],
+  filterQuery: FilterQuery<any>
+): Promise<INotebook[]> => {
+  // Ensure that only notebooks belonging to the user are fetched
+  const securityQuery = { user: userId };
+
+  const finalQuery = {
+    $and: [filterQuery, securityQuery],
+  };
+
+  const notebooks = await NotebookModel.find(finalQuery).populate(
+    "user",
+    userPopulateFields
+  );
+  return notebooks;
+};
+
+/**
+ * Search all notebooks from all users
+ * @param filterQuery - The mongoose filter query object from filter builder
+ * @returns The list of notes matching the criteria
+ */
+export const adminSearchAllNotebooks = async (
+  filterQuery: FilterQuery<any>
+): Promise<INotebook[]> => {
+  const notes = await NotebookModel.find(filterQuery).populate(
+    "user",
+    userPopulateFields
+  );
+  return notes;
+};
+
+/**
+ * Search all notebooks from a specific user
+ * @param userId - The ID of the user
+ * @param filterQuery - The mongoose filter query object from filter builder
+ * @returns The list of notebooks matching the criteria
+ */
+export const adminSearchNotebooksForUser = async (
+  userId: string,
+  filterQuery: FilterQuery<any>
+): Promise<INotebook[]> => {
+  const user = await UserModel.findOne({ id: userId });
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const securityQuery = { user: user._id };
+  const finalQuery = {
+    $and: [filterQuery, securityQuery],
+  };
+
+  const notebooks = await NotebookModel.find(finalQuery).populate(
+    "user",
+    userPopulateFields
+  );
+  return notebooks;
 };

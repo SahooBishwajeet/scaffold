@@ -3,6 +3,19 @@ import * as userService from "../services/user.service";
 import ApiError from "../utils/apiError";
 import ApiResponse from "../utils/apiResponse";
 import { asyncHandler } from "../utils/asyncHandler";
+import {
+  buildMongoQuery,
+  FieldTypeMap,
+  FilterCondition,
+} from "../utils/filter";
+
+const userFieldTypeMap: FieldTypeMap = {
+  name: "string",
+  email: "string",
+  role: "string",
+  createdAt: "date",
+  updatedAt: "date",
+};
 
 /**
  * @desc    Get all users
@@ -142,5 +155,27 @@ export const deleteMyAccount = asyncHandler(
     res
       .status(200)
       .json(new ApiResponse(200, null, "Account deleted successfully"));
+  }
+);
+
+/**
+ * @desc    Search all users based on filter criteria
+ * @route   POST /api/v1/users/search
+ * @access  Admin
+ */
+export const adminSearchUsers = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { filter }: { filter: FilterCondition[] } = req.body;
+    const { query, error } = buildMongoQuery(filter, userFieldTypeMap);
+
+    if (error) {
+      throw new ApiError(400, `Invalid filter: ${error.message}`);
+    }
+
+    const users = await userService.adminSearchUsers(query || {});
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, users, "Filtered users fetched successfully"));
   }
 );

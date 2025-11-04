@@ -3,6 +3,20 @@ import * as noteService from "../services/note.service";
 import ApiError from "../utils/apiError";
 import ApiResponse from "../utils/apiResponse";
 import { asyncHandler } from "../utils/asyncHandler";
+import {
+  buildMongoQuery,
+  FieldTypeMap,
+  FilterCondition,
+} from "../utils/filter";
+
+const noteFieldTypeMap: FieldTypeMap = {
+  title: "string",
+  content: "string",
+  tags: "array",
+  isPinned: "boolean",
+  createdAt: "date",
+  updatedAt: "date",
+};
 
 /**
  * @desc    Get all notes
@@ -250,5 +264,110 @@ export const deleteMyNote = asyncHandler(
     res
       .status(200)
       .json(new ApiResponse(200, null, "Note deleted successfully"));
+  }
+);
+
+/**
+ * @desc    Search notes for the logged-in user based on filter criteria
+ * @route   POST /api/v1/notes/search
+ * @access  Protected
+ */
+export const searchMyNotes = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new ApiError(401, "Not authorized");
+    }
+
+    const { filter }: { filter: FilterCondition[] } = req.body;
+    const { query, error } = buildMongoQuery(filter, noteFieldTypeMap);
+
+    if (error) {
+      throw new ApiError(400, `Invalid filter: ${error.message}`);
+    }
+
+    const notes = await noteService.searchMyNotes(req.user._id, query || {});
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, notes, "Filtered notes fetched successfully"));
+  }
+);
+
+/**
+ * @desc    Search notes in a specific notebook for the logged-in user based on filter criteria
+ * @route   POST /api/v1/notebooks/:notebookId/notes/search
+ * @access  Protected
+ */
+export const searchMyNotesInNotebook = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new ApiError(401, "Not authorized");
+    }
+
+    const { notebookId } = req.params;
+    const { filter }: { filter: FilterCondition[] } = req.body;
+    const { query, error } = buildMongoQuery(filter, noteFieldTypeMap);
+
+    if (error) {
+      throw new ApiError(400, `Invalid filter: ${error.message}`);
+    }
+
+    const notes = await noteService.searchMyNotesInNotebook(
+      req.user._id,
+      notebookId,
+      query || {}
+    );
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, notes, "Filtered notes fetched successfully"));
+  }
+);
+
+/**
+ * @desc    Search all notes from all users based on filter criteria
+ * @route   POST /api/v1/notes/admin/search
+ * @access  Admin
+ */
+export const adminSearchAllNotes = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { filter }: { filter: FilterCondition[] } = req.body;
+    const { query, error } = buildMongoQuery(filter, noteFieldTypeMap);
+
+    if (error) {
+      throw new ApiError(400, `Invalid filter: ${error.message}`);
+    }
+
+    const notes = await noteService.adminSearchAllNotes(query || {});
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, notes, "Filtered notes fetched successfully"));
+  }
+);
+
+/**
+ * @desc    Search notes for a specific user by user ID based on filter criteria
+ * @route   POST /api/v1/users/:userId/notes/search
+ * @access  Admin
+ */
+export const adminSearchNotesForUser = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { userId } = req.params;
+    const { filter }: { filter: FilterCondition[] } = req.body;
+    const { query, error } = buildMongoQuery(filter, noteFieldTypeMap);
+
+    if (error) {
+      throw new ApiError(400, `Invalid filter: ${error.message}`);
+    }
+
+    const notes = await noteService.adminSearchNotesForUser(
+      userId,
+      query || {}
+    );
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, notes, "Filtered notes fetched successfully"));
   }
 );

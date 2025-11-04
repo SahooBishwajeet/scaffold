@@ -1,5 +1,6 @@
+import { FilterQuery } from "mongoose";
 import NoteModel, { INote } from "../models/note.model";
-import NotebookModel from "../models/notebook.model";
+import NotebookModel, { INotebook } from "../models/notebook.model";
 import UserModel, { IUser } from "../models/user.model";
 import ApiError from "../utils/apiError";
 
@@ -261,4 +262,97 @@ export const deleteMyNote = async (
   const note = await getMyNoteById(noteId, userId);
 
   await note.delete();
+};
+
+/**
+ * Search notes for a user based on filter criteria
+ * @param userId - The ID of the user
+ * @param filterQuery - The mongoose filter query object from filter builder
+ * @returns The list of notes matching the criteria
+ */
+export const searchMyNotes = async (
+  userId: IUser["_id"],
+  filterQuery: FilterQuery<any>
+): Promise<INote[]> => {
+  // Ensure that only notes belonging to the user are fetched
+  const securityQuery = { user: userId };
+
+  const finalQuery = {
+    $and: [filterQuery, securityQuery],
+  };
+
+  const notes = await NoteModel.find(finalQuery).populate(fullPopulate);
+  return notes;
+};
+
+/**
+ * Search notes for a user within a specific notebook based on filter criteria
+ * @param userId - The ID of the user
+ * @param notebookId - The ID of the notebook
+ * @param filterQuery - The mongoose filter query object from filter builder
+ * @returns The list of notes matching the criteria
+ */
+export const searchMyNotesInNotebook = async (
+  userId: IUser["_id"],
+  notebookId: INotebook["_id"],
+  filterQuery: FilterQuery<any>
+): Promise<INote[]> => {
+  const notebook = await NotebookModel.findOne({
+    id: notebookId,
+    user: userId,
+  });
+
+  if (!notebook) {
+    throw new ApiError(
+      404,
+      "Notebook not found or you don't have access to it"
+    );
+  }
+
+  // Ensure that only notes belonging to the user are fetched
+  // Plus that they belong to the specified notebook
+  const securityQuery = { user: userId, notebook: notebook._id };
+
+  const finalQuery = {
+    $and: [filterQuery, securityQuery],
+  };
+
+  const notes = await NoteModel.find(finalQuery).populate(fullPopulate);
+  return notes;
+};
+
+/**
+ * Search all notes from all users
+ * @param filterQuery - The mongoose filter query object from filter builder
+ * @returns The list of notes matching the criteria
+ */
+export const adminSearchAllNotes = async (
+  filterQuery: FilterQuery<any>
+): Promise<INote[]> => {
+  const notes = await NoteModel.find(filterQuery).populate(fullPopulate);
+  return notes;
+};
+
+/**
+ * Search all notes from a specific user
+ * @param userId - The ID of the user
+ * @param filterQuery - The mongoose filter query object from filter builder
+ * @returns The list of notes matching the criteria
+ */
+export const adminSearchNotesForUser = async (
+  userId: string,
+  filterQuery: FilterQuery<any>
+): Promise<INote[]> => {
+  const user = await UserModel.findOne({ id: userId });
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const securityQuery = { user: user._id };
+  const finalQuery = {
+    $and: [filterQuery, securityQuery],
+  };
+
+  const notes = await NoteModel.find(finalQuery).populate(fullPopulate);
+  return notes;
 };

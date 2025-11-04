@@ -12,8 +12,15 @@ router.use(protect);
 router.post("/", notebookController.createNotebook);
 router.get("/", notebookController.getMyNotebooks);
 
+router.post("/search", notebookController.searchMyNotebooks);
+
 router.post("/:notebookId/notes", noteController.createNote);
 router.get("/:notebookId/notes", noteController.getNotesInNotebook);
+
+router.post(
+  "/:notebookId/notes/search",
+  noteController.searchMyNotesInNotebook
+);
 
 router.get("/:id", notebookController.getMyNotebookById);
 router.put("/:id", notebookController.updateMyNotebookById);
@@ -25,6 +32,8 @@ router.use(authorizeRoles(UserRole.ADMIN));
 router.get("/all/notebooks", notebookController.getAllNotebooks);
 router.get("/all/deleted", notebookController.getDeletedNotebooks);
 router.put("/:id/restore", notebookController.restoreNotebook);
+
+router.post("/admin/search", notebookController.adminSearchAllNotebooks);
 
 router.put("/admin/:id", notebookController.adminUpdateNotebook);
 router.delete("/admin/:id", notebookController.adminDeleteNotebook);
