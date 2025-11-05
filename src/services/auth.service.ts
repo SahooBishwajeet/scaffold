@@ -1,6 +1,12 @@
+import crypto from "crypto";
 import UserModel, { IUser } from "../models/user.model";
 import ApiError from "../utils/apiError";
 import { IJwtPayload, signToken } from "../utils/jwt";
+import {
+  sendLoginAlertEmail,
+  sendPasswordResetEmail,
+  sendWelcomeEmail,
+} from "./mail.service";
 
 interface IAuthResponse {
   user: Omit<IUser, "comparePassword">;
@@ -40,6 +46,9 @@ export const register = async (
   };
   const token = signToken(payload);
 
+  // -- Send welcome email --
+  sendWelcomeEmail(newUser.email, newUser.name);
+
   return {
     user: newUser,
     token: token,
@@ -49,10 +58,12 @@ export const register = async (
 /**
  * Logs in a user.
  * @param credentials - Email and Password of the user
+ * @param loginInfo - IP address and User-Agent of the login request
  * @returns The user and a JWT token
  */
 export const login = async (
-  credentials: Pick<IUser, "email" | "password">
+  credentials: Pick<IUser, "email" | "password">,
+  loginInfo: { ip: string; userAgent: string }
 ): Promise<IAuthResponse> => {
   const { email, password } = credentials;
 
@@ -72,8 +83,85 @@ export const login = async (
   };
   const token = signToken(payload);
 
+  // -- Send login alert email --
+  sendLoginAlertEmail(user.email, loginInfo.ip, loginInfo.userAgent);
+
   return {
     user: user,
     token: token,
+  };
+};
+
+/**
+ * Sends a password reset email to the user.
+ * @param email - Email of the user requesting password reset
+ */
+export const forgotPasswordService = async (email: string): Promise<void> => {
+  const user = await UserModel.findOne({
+    email,
+  });
+
+  if (!user) {
+    return;
+  }
+
+  const plainToken = crypto.randomBytes(32).toString("hex");
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(plainToken)
+    .digest("hex");
+
+  const validityDuration = 10 * 60 * 1000; // 10 minutes
+
+  user.passwordResetToken = hashedToken;
+  user.passwordResetExpires = new Date(Date.now() + validityDuration);
+
+  try {
+    await user.save();
+
+    sendPasswordResetEmail(user.email, plainToken);
+  } catch (error) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+    throw new ApiError(500, "Error sending password reset email");
+  }
+};
+
+/** Resets the user's password using a valid reset token.
+ * @param token - Password reset token
+ * @param newPassword - New password to be set
+ * @returns The user and a JWT token
+ */
+export const resetPasswordService = async (
+  token: string,
+  newPassword: string
+): Promise<IAuthResponse> => {
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  const user = await UserModel.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: new Date() }, // Token is not expired
+  });
+
+  if (!user) {
+    throw new ApiError(400, "Invalid or expired password reset token");
+  }
+
+  user.password = newPassword;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+
+  await user.save();
+
+  const payload: IJwtPayload = {
+    id: user.id,
+    role: user.role,
+  };
+  const loginToken = signToken(payload);
+
+  return {
+    user: user,
+    token: loginToken,
   };
 };

@@ -18,6 +18,8 @@ export interface IUser extends SoftDeleteDocument {
   password: string;
   role: UserRole;
   comparePassword(password: string): Promise<boolean>;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
 }
 
 const userSchema = new Schema<IUser>(
@@ -56,6 +58,14 @@ const userSchema = new Schema<IUser>(
       enum: Object.values(UserRole),
       default: UserRole.USER,
     },
+    passwordResetToken: {
+      type: String,
+      select: false,
+    },
+    passwordResetExpires: {
+      type: Date,
+      select: false,
+    },
   },
   {
     timestamps: true,
@@ -69,6 +79,9 @@ const userSchema = new Schema<IUser>(
 
         delete (ret as any).deleted;
         delete (ret as any).deletedAt;
+
+        delete (ret as any).passwordResetToken;
+        delete (ret as any).passwordResetExpires;
       },
     },
   }
