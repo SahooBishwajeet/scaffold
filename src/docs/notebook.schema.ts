@@ -14,3 +14,28 @@ export const NotebookSchema = {
     updatedAt: { type: "string", format: "date-time" },
   },
 };
+
+export const CreateNotebookBody = {
+  type: "object",
+  properties: {
+    name: { type: "string", example: "Work Projects" },
+    description: {
+      type: "string",
+      example: "My work-related notes.",
+      nullable: true,
+    },
+  },
+  required: ["name"],
+};
+
+export const UpdateNotebookBody = {
+  type: "object",
+  properties: {
+    name: { type: "string", example: "Work Projects" },
+    description: {
+      type: "string",
+      example: "My work-related notes.",
+    },
+    isPinned: { type: "boolean", example: true },
+  },
+};

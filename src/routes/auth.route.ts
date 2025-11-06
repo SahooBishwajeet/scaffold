@@ -159,7 +159,7 @@ router.post("/refresh", refreshToken);
  *             properties:
  *               success: {type: boolean, example: true}
  *               message: {type: string, example: "Password reset link sent successfully if the email exists"}
- *               data: {type: 'object', nullable: true, example: null}
+ *               data: {type: object, nullable: true, example: null}
  *       "400":
  *         $ref: "#/components/responses/BadRequestError"
  */

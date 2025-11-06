@@ -19,3 +19,21 @@ export const NoteSchema = {
     updatedAt: { type: "string", format: "date-time" },
   },
 };
+
+export const CreateNoteBody = {
+  type: "object",
+  properties: {
+    title: { type: "string", example: "Meeting Notes" },
+    content: {
+      type: "string",
+      example: "Talked about the new feature.",
+    },
+    tags: {
+      type: "array",
+      items: { type: "string" },
+      example: ["meeting", "feature"],
+    },
+    isPinned: { type: "boolean", example: false },
+  },
+  required: ["title"],
+};
