@@ -275,6 +275,7 @@ router.put(
   authorizeRoles(UserRole.ADMIN),
   notebookController.restoreNotebook
 );
+// -- Admin Route End --
 
 /**
  * @swagger

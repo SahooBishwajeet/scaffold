@@ -37,3 +37,32 @@ export const CreateNoteBody = {
   },
   required: ["title"],
 };
+
+export const UpdateNoteBody = {
+  type: "object",
+  properties: {
+    title: { type: "string", example: "Meeting Notes" },
+    content: {
+      type: "string",
+      example: "Talked about the new feature.",
+    },
+    tags: {
+      type: "array",
+      items: { type: "string" },
+      example: ["meeting", "feature"],
+    },
+    isPinned: { type: "boolean", example: true },
+  },
+};
+
+export const MoveNoteBody = {
+  type: "object",
+  properties: {
+    newNotebookId: {
+      type: "string",
+      format: "uuid",
+      example: "a1b2c3...",
+    },
+  },
+  required: ["newNotebookId"],
+};

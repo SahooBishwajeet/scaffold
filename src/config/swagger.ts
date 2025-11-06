@@ -8,7 +8,12 @@ import {
   ResetPasswordBody,
 } from "../docs/auth.schema";
 import { FilterConditionSchema } from "../docs/filterCondtition.schema";
-import { CreateNoteBody, NoteSchema } from "../docs/note.schema";
+import {
+  CreateNoteBody,
+  MoveNoteBody,
+  NoteSchema,
+  UpdateNoteBody,
+} from "../docs/note.schema";
 import {
   CreateNotebookBody,
   NotebookSchema,
@@ -98,6 +103,8 @@ const options: swaggerJSDoc.Options = {
         CreateNotebookBody: CreateNotebookBody,
         UpdateNotebookBody: UpdateNotebookBody,
         CreateNoteBody: CreateNoteBody,
+        UpdateNoteBody: UpdateNoteBody,
+        MoveNoteBody: MoveNoteBody,
       },
       parameters: {
         ...parameters,
