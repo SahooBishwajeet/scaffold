@@ -1,5 +1,5 @@
 export const parameters = {
-  UserIdParam: {
+  UserId: {
     name: "id",
     in: "path",
     description: "UUID of the user",
@@ -10,7 +10,7 @@ export const parameters = {
       example: "123e4567-e..",
     },
   },
-  NotebookIdParam: {
+  NotebookId: {
     name: "id",
     in: "path",
     description: "UUID of the notebook",
@@ -21,7 +21,7 @@ export const parameters = {
       example: "123e4567-e..",
     },
   },
-  NoteIdParam: {
+  NoteId: {
     name: "id",
     in: "path",
     description: "UUID of the note",
@@ -32,7 +32,7 @@ export const parameters = {
       example: "123e4567-e..",
     },
   },
-  NestedUserIdParam: {
+  NestedUserId: {
     name: "userId",
     in: "path",
     description: "UUID of the user",
@@ -43,7 +43,7 @@ export const parameters = {
       example: "123e4567-e..",
     },
   },
-  NestedNotebookIdParam: {
+  NestedNotebookId: {
     name: "notebookId",
     in: "path",
     description: "UUID of the notebook",
@@ -54,7 +54,7 @@ export const parameters = {
       example: "123e4567-e..",
     },
   },
-  NestedNoteIdParam: {
+  NestedNoteId: {
     name: "noteId",
     in: "path",
     description: "UUID of the note",

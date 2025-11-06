@@ -12,7 +12,12 @@ import { NoteSchema } from "../docs/note.schema";
 import { NotebookSchema } from "../docs/notebook.schema";
 import { parameters } from "../docs/parameters";
 import { responses } from "../docs/responses";
-import { UserSchema } from "../docs/user.schema";
+import {
+  AdminUpdateUserBody,
+  ChangePasswordBody,
+  UpdateProfileBody,
+  UserSchema,
+} from "../docs/user.schema";
 
 const options: swaggerJSDoc.Options = {
   definition: {
@@ -24,12 +29,12 @@ const options: swaggerJSDoc.Options = {
     },
     servers: [
       {
-        url: `http://localhost:${Config.PORT}`,
-        description: "Local Development Server (Root)",
-      },
-      {
         url: `http://localhost:${Config.PORT}${Config.API_PREFIX}`,
         description: "Local Development Server (API)",
+      },
+      {
+        url: `http://localhost:${Config.PORT}`,
+        description: "Local Development Server (Root)",
       },
     ],
     components: {
@@ -68,12 +73,28 @@ const options: swaggerJSDoc.Options = {
         Notebook: NotebookSchema,
         Note: NoteSchema,
         FilterCondition: FilterConditionSchema,
+        SearchBody: {
+          type: "object",
+          properties: {
+            filters: {
+              type: "array",
+              items: {
+                $ref: "#/components/schemas/FilterCondition",
+              },
+            },
+          },
+        },
         RegisterBody: RegisterBody,
         LoginBody: LoginBody,
         ForgotPasswordBody: ForgotPasswordBody,
         ResetPasswordBody: ResetPasswordBody,
+        UpdateProfileBody: UpdateProfileBody,
+        ChangePasswordBody: ChangePasswordBody,
+        AdminUpdateUserBody: AdminUpdateUserBody,
       },
-      parameters: parameters,
+      parameters: {
+        ...parameters,
+      },
       responses: responses,
     },
     security: [
