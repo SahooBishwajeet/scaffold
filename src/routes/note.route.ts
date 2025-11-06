@@ -7,7 +7,119 @@ const router = Router();
 
 router.use(protect);
 
-// -- User-specific route --
+// -- Admin-only routes (Static) --
+
+/**
+ * @swagger
+ * /notes/all/notes:
+ *   get:
+ *     summary: Get all notes (Admin)
+ *     description: Fetches a list of all non-deleted notes from all users.
+ *     tags: [Note (Admin)]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: A list of all notes.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 message: { type: string, example: "All notes fetched" }
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Note'
+ *       "401":
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       "403":
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
+router.get(
+  "/all/notes",
+  authorizeRoles(UserRole.ADMIN),
+  noteController.getAllNotes
+);
+
+/**
+ * @swagger
+ * /notes/all/deleted:
+ *   get:
+ *     summary: Get all soft-deleted notes (Admin)
+ *     description: Fetches a list of all soft-deleted notes from all users.
+ *     tags: [Note (Admin)]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: A list of all soft-deleted notes.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 message: { type: string, example: "Deleted notes fetched" }
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Note'
+ *       "401":
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       "403":
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
+router.get(
+  "/all/deleted",
+  authorizeRoles(UserRole.ADMIN),
+  noteController.getDeletedNotes
+);
+
+/**
+ * @swagger
+ * /notes/admin/search:
+ *   post:
+ *     summary: Search all notes (Admin)
+ *     description: Performs a complex search on all notes from all users.
+ *     tags: [Note (Admin)]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SearchBody'
+ *     responses:
+ *       "200":
+ *         description: A list of matching notes.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 message: { type: string, example: "Admin search results fetched" }
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Note'
+ *       "400":
+ *         $ref: '#/components/responses/BadRequestError'
+ *       "401":
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       "403":
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
+router.post(
+  "/admin/search",
+  authorizeRoles(UserRole.ADMIN),
+  noteController.adminSearchAllNotes
+);
+
+// -- User routes (Static) --
 
 /**
  * @swagger
@@ -119,7 +231,7 @@ router.post("/search", noteController.searchMyNotes);
  */
 router.put("/:noteId/move", noteController.moveMyNote);
 
-// -- Admin Route (Placed Here For :id) --
+// -- Admin-only routes (Parameterized) --
 
 /**
  * @swagger
@@ -160,195 +272,6 @@ router.put(
   authorizeRoles(UserRole.ADMIN),
   noteController.restoreNote
 );
-// -- Admin Route End --
-
-/**
- * @swagger
- * /notes/{noteId}:
- *   get:
- *     summary: Get a single note by ID
- *     description: Fetches one of the user's notes by its UUID.
- *     tags: [Note (Self)]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - $ref: '#/components/parameters/NoteId'
- *     responses:
- *       "200":
- *         description: Note details fetched successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success: { type: boolean, example: true }
- *                 message: { type: string, example: "Note fetched successfully" }
- *                 data:
- *                   $ref: '#/components/schemas/Note'
- *       "401":
- *         $ref: '#/components/responses/UnauthorizedError'
- *       "404":
- *         $ref: '#/components/responses/NotFoundError'
- *   put:
- *     summary: Update a note by ID
- *     description: Updates one of the user's notes by its UUID.
- *     tags: [Note (Self)]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - $ref: '#/components/parameters/NoteId'
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UpdateNoteBody'
- *     responses:
- *       "200":
- *         description: Note updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success: { type: boolean, example: true }
- *                 message: { type: string, example: "Note updated successfully" }
- *                 data:
- *                   $ref: '#/components/schemas/Note'
- *       "401":
- *         $ref: '#/components/responses/UnauthorizedError'
- *       "404":
- *         $ref: '#/components/responses/NotFoundError'
- *   delete:
- *     summary: Delete a note by ID
- *     description: Soft-deletes one of the user's notes by its UUID.
- *     tags: [Note (Self)]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - $ref: '#/components/parameters/NoteId'
- *     responses:
- *       "200":
- *         description: Note deleted successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success: { type: boolean, example: true }
- *                 message: { type: string, example: "Note deleted successfully" }
- *                 data: { type: object, nullable: true, example: null }
- *       "401":
- *         $ref: '#/components/responses/UnauthorizedError'
- *       "404":
- *         $ref: '#/components/responses/NotFoundError'
- */
-router
-  .route("/:noteId")
-  .get(noteController.getMyNoteById)
-  .put(noteController.updateMyNote)
-  .delete(noteController.deleteMyNote);
-
-// --- Admin-only routes ---
-router.use(authorizeRoles(UserRole.ADMIN));
-
-/**
- * @swagger
- * /notes/all/notes:
- *   get:
- *     summary: Get all notes (Admin)
- *     description: Fetches a list of all non-deleted notes from all users.
- *     tags: [Note (Admin)]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       "200":
- *         description: A list of all notes.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success: { type: boolean, example: true }
- *                 message: { type: string, example: "All notes fetched" }
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Note'
- *       "401":
- *         $ref: '#/components/responses/UnauthorizedError'
- *       "403":
- *         $ref: '#/components/responses/ForbiddenError'
- */
-router.get("/all/notes", noteController.getAllNotes);
-
-/**
- * @swagger
- * /notes/all/deleted:
- *   get:
- *     summary: Get all soft-deleted notes (Admin)
- *     description: Fetches a list of all soft-deleted notes from all users.
- *     tags: [Note (Admin)]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       "200":
- *         description: A list of all soft-deleted notes.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success: { type: boolean, example: true }
- *                 message: { type: string, example: "Deleted notes fetched" }
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Note'
- *       "401":
- *         $ref: '#/components/responses/UnauthorizedError'
- *       "403":
- *         $ref: '#/components/responses/ForbiddenError'
- */
-router.get("/all/deleted", noteController.getDeletedNotes);
-
-/**
- * @swagger
- * /notes/admin/search:
- *   post:
- *     summary: Search all notes (Admin)
- *     description: Performs a complex search on all notes from all users.
- *     tags: [Note (Admin)]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/SearchBody'
- *     responses:
- *       "200":
- *         description: A list of matching notes.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success: { type: boolean, example: true }
- *                 message: { type: string, example: "Admin search results fetched" }
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Note'
- *       "400":
- *         $ref: '#/components/responses/BadRequestError'
- *       "401":
- *         $ref: '#/components/responses/UnauthorizedError'
- *       "403":
- *         $ref: '#/components/responses/ForbiddenError'
- */
-router.post("/admin/search", noteController.adminSearchAllNotes);
 
 /**
  * @swagger
@@ -442,5 +365,94 @@ router
   .get(noteController.adminGetNoteById)
   .put(noteController.adminUpdateNote)
   .delete(noteController.adminDeleteNote);
+
+// -- User routes (Parameterized) --
+
+/**
+ * @swagger
+ * /notes/{noteId}:
+ *   get:
+ *     summary: Get a single note by ID
+ *     description: Fetches one of the user's notes by its UUID.
+ *     tags: [Note (Self)]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/NoteId'
+ *     responses:
+ *       "200":
+ *         description: Note details fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 message: { type: string, example: "Note fetched successfully" }
+ *                 data:
+ *                   $ref: '#/components/schemas/Note'
+ *       "401":
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       "404":
+ *         $ref: '#/components/responses/NotFoundError'
+ *   put:
+ *     summary: Update a note by ID
+ *     description: Updates one of the user's notes by its UUID.
+ *     tags: [Note (Self)]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/NoteId'
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateNoteBody'
+ *     responses:
+ *       "200":
+ *         description: Note updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 message: { type: string, example: "Note updated successfully" }
+ *                 data:
+ *                   $ref: '#/components/schemas/Note'
+ *       "401":
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       "404":
+ *         $ref: '#/components/responses/NotFoundError'
+ *   delete:
+ *     summary: Delete a note by ID
+ *     description: Soft-deletes one of the user's notes by its UUID.
+ *     tags: [Note (Self)]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/NoteId'
+ *     responses:
+ *       "200":
+ *         description: Note deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 message: { type: string, example: "Note deleted successfully" }
+ *                 data: { type: object, nullable: true, example: null }
+ *       "401":
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       "404":
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+router
+  .route("/:noteId")
+  .get(noteController.getMyNoteById)
+  .put(noteController.updateMyNote)
+  .delete(noteController.deleteMyNote);
 
 export default router;

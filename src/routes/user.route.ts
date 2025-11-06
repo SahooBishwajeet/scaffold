@@ -265,6 +265,42 @@ router.post("/search", userController.adminSearchUsers);
 
 /**
  * @swagger
+ *   /users/{id}/restore:
+ *     put:
+ *       summary: Restore a soft-deleted user (Admin)
+ *       description: Restores a user account that was previously soft-deleted.
+ *       tags: [User (Admin)]
+ *       security:
+ *         - bearerAuth: []
+ *       parameters:
+ *         - $ref: '#/components/parameters/UserId'
+ *       responses:
+ *         "200":
+ *           description: User restored successfully
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   success: { type: boolean, example: true }
+ *                   message: { type: string, example: "User restored successfully" }
+ *                   data:
+ *                     $ref: '#/components/schemas/User'
+ *         "401":
+ *           $ref: '#/components/responses/UnauthorizedError'
+ *         "403":
+ *           $ref: '#/components/responses/ForbiddenError'
+ *         "404":
+ *           description: Deleted user not found
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/components/schemas/ApiError'
+ */
+router.put("/:id/restore", userController.restoreUser);
+
+/**
+ * @swagger
  * /users/{userId}/notebooks:
  *   get:
  *     summary: Get all notebooks for a specific user (Admin)
@@ -549,41 +585,5 @@ router
   .get(userController.getUserById)
   .put(userController.updateUser)
   .delete(userController.deleteUser);
-
-/**
- * @swagger
- *   /users/{id}/restore:
- *     put:
- *       summary: Restore a soft-deleted user (Admin)
- *       description: Restores a user account that was previously soft-deleted.
- *       tags: [User (Admin)]
- *       security:
- *         - bearerAuth: []
- *       parameters:
- *         - $ref: '#/components/parameters/UserId'
- *       responses:
- *         "200":
- *           description: User restored successfully
- *           content:
- *             application/json:
- *               schema:
- *                 type: object
- *                 properties:
- *                   success: { type: boolean, example: true }
- *                   message: { type: string, example: "User restored successfully" }
- *                   data:
- *                     $ref: '#/components/schemas/User'
- *         "401":
- *           $ref: '#/components/responses/UnauthorizedError'
- *         "403":
- *           $ref: '#/components/responses/ForbiddenError'
- *         "404":
- *           description: Deleted user not found
- *           content:
- *             application/json:
- *               schema:
- *                 $ref: '#/components/schemas/ApiError'
- */
-router.put("/:id/restore", userController.restoreUser);
 
 export default router;
