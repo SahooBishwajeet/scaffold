@@ -1,3 +1,4 @@
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Application, Request, Response } from "express";
 import helmet from "helmet";
@@ -18,6 +19,8 @@ app.use(helmet());
 app.use(express.json());
 // Parse URL-encodes req.body
 app.use(express.urlencoded({ extended: true }));
+// Cookie Parser
+app.use(cookieParser());
 
 // Request Logger
 app.use(requestLogger);

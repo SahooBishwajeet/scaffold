@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import UserModel, { UserRole } from "../models/user.model";
 import ApiError from "../utils/apiError";
 import { asyncHandler } from "../utils/asyncHandler";
-import { IJwtPayload, verifyToken } from "../utils/jwt";
+import { IJwtPayload, verifyAccessToken } from "../utils/jwt";
 
 export const protect = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -19,7 +19,7 @@ export const protect = asyncHandler(
       throw new ApiError(401, "Not authorized, No token provided");
     }
 
-    const decoded = verifyToken(token) as IJwtPayload;
+    const decoded = verifyAccessToken(token) as IJwtPayload;
 
     const user = await UserModel.findOne({ id: decoded.id });
 
