@@ -10,6 +10,8 @@ const config = {
   PORT: parseInt(process.env.PORT || "3000", 10),
   IS_PRODUCTION: process.env.NODE_ENV === "production",
 
+  API_PREFIX: process.env.API_PREFIX || "/api/v1",
+
   // --- Database ---
   DB_URI: process.env.DB_URI || "mongodb://localhost:27017/backend_template",
 

@@ -2,7 +2,9 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Application, Request, Response } from "express";
 import helmet from "helmet";
+import swaggerUi from "swagger-ui-express";
 import { Config } from "./config";
+import { swaggerSpecs } from "./config/swagger";
 import { requestLogger } from "./middlewares/requestLogger";
 import router from "./routes/index";
 import ApiError from "./utils/apiError";
@@ -33,7 +35,31 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
-// Health Check Route
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     summary: Health Check
+ *     description: Checks if the server is alive and responding.
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: Server is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 timestamp:
+ *                   type: string
+ *                   example: 2025-11-03T10:00:00Z
+ *                 uptime:
+ *                   type: number
+ *                   example: 123.45
+ */
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({
     status: "OK",
@@ -43,7 +69,9 @@ app.get("/health", (req: Request, res: Response) => {
 });
 
 // API Routes
-app.use("/api/v1", router);
+app.use(Config.API_PREFIX, router);
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 // Not Found Route
 app.use((req: Request, res: Response) => {
