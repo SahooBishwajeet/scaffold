@@ -14,6 +14,9 @@ const config = {
 
   // --- Database ---
   DB_URI: process.env.DB_URI || "mongodb://localhost:27017/backend_template",
+  DB_TEST_URI:
+    process.env.DB_TEST_URI ||
+    "mongodb://localhost:27017/backend_template_test",
 
   // --- Security ---
   BCRYPT_SALT_ROUNDS: parseInt(process.env.BCRYPT_SALT_ROUNDS || "10", 10),

@@ -4,6 +4,9 @@
 # Compiled output
 /dist
 
+# Test coverage
+/coverage
+
 # Environment variables
 .env
 
