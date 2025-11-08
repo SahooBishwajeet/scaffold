@@ -1,6 +1,6 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import express, { Application, Request, Response } from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
 import helmet from "helmet";
 import swaggerUi from "swagger-ui-express";
 import { Config } from "./config";
@@ -74,30 +74,48 @@ app.use(Config.API_PREFIX, router);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 // Not Found Route
-app.use((req: Request, res: Response) => {
-  res.status(404).json({
-    message: "Route Not Found",
-  });
+app.use((req: Request, res: Response, next: NextFunction) => {
+  next(new ApiError(404, "Route Not Found"));
 });
 
 // Error Handler
-app.use((err: Error, req: Request, res: Response) => {
-  if (err instanceof ApiError) {
-    logger.warn(`[ApiError] ${err.statusCode} - ${err.message}`);
-    return res.status(err.statusCode).json({
-      success: false,
-      message: err.message,
-    });
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  let error = err; // Start with the incoming error
+  let statusCode = 500;
+
+  // Mongoose Validation Errors
+  if (err.name === "ValidationError") {
+    const messages = Object.values((err as any).errors)
+      .map((val: any) => val.message)
+      .join(", ");
+    error = new ApiError(400, `Invalid input: ${messages}`);
   }
 
-  logger.error(`[UnhandledError] ${err.message}, Stack: ${err.stack}`);
+  // Mongoose Duplicate Key Errors
+  if ((err as any).code === 11000) {
+    const field = Object.keys((err as any).keyValue)[0];
+    error = new ApiError(409, `Duplicate value for field: ${field}`);
+  }
 
-  // Do not leak error details in production
-  const message = Config.IS_PRODUCTION ? "Internal Server Error" : err.message;
+  if (error instanceof ApiError) {
+    statusCode = error.statusCode;
+    if (statusCode < 500) {
+      logger.warn(`[ApiError] ${statusCode} - ${error.message}`);
+    }
+  } else {
+    logger.error(`[UnhandledError] ${error.message}`, { stack: error.stack });
+  }
 
-  return res.status(500).json({
-    success: false,
+  const message = (error as ApiError).message || "Internal Server Error";
+  const success = statusCode < 300;
+
+  // Don't leak stack trace in production
+  const stack = Config.IS_PRODUCTION ? {} : { stack: error.stack };
+
+  return res.status(statusCode).json({
+    success,
     message,
+    ...stack,
   });
 });
 
