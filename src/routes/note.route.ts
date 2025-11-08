@@ -362,9 +362,9 @@ router.put(
  */
 router
   .route("/admin/:noteId")
-  .get(noteController.adminGetNoteById)
-  .put(noteController.adminUpdateNote)
-  .delete(noteController.adminDeleteNote);
+  .get(authorizeRoles(UserRole.ADMIN), noteController.adminGetNoteById)
+  .put(authorizeRoles(UserRole.ADMIN), noteController.adminUpdateNote)
+  .delete(authorizeRoles(UserRole.ADMIN), noteController.adminDeleteNote);
 
 // -- User routes (Parameterized) --
 
