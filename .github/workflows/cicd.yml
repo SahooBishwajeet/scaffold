@@ -45,12 +45,12 @@ jobs:
         env:
           DB_TEST_URI: mongodb://localhost:27017/my-app-template-ci-test
 
-          JWT_ACCESS_SECRET: test-secret
-          JWT_REFRESH_SECRET: test-refresh-secret
-          MAIL_HOST: smtp.example.com
-          MAIL_PORT: 587
-          MAIL_USER: test@example.com
-          MAIL_PASS: password
+          JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
+          JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_USER: ${{ secrets.MAIL_USER }}
+          MAIL_PASS: ${{ secrets.MAIL_PASS }}
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4

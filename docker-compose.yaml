@@ -6,27 +6,11 @@ services:
     container_name: backend_template_api
     ports:
       - '3000:3000'
+    env_file:
+      - .env.production
     environment:
-      NODE_ENV: ${NODE_ENV}
-      PORT: ${PORT}
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASS}
-      DB_NAME: ${DB_NAME}
-
+      NODE_ENV: production
       DB_URI: mongodb://${DB_USER}:${DB_PASS}@mongo:27017/${DB_NAME}?authSource=admin
-
-      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
-      JWT_ACCESS_EXPIRES_IN: ${JWT_ACCESS_EXPIRES_IN}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
-      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN}
-
-      MAIL_HOST: ${MAIL_HOST}
-      MAIL_PORT: ${MAIL_PORT}
-      MAIL_USER: ${MAIL_USER}
-      MAIL_PASS: ${MAIL_PASS}
-      MAIL_FROM: ${MAIL_FROM}
-
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
 
     depends_on:
       - mongo
@@ -35,7 +19,7 @@ services:
     image: mongo:latest
     container_name: backend_template_mongo
     ports:
-      - '27017:27017'
+      - '27018:27017'
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
