@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router } from 'express';
 import {
   forgotPassword,
   loginUser,
@@ -6,9 +6,11 @@ import {
   refreshToken,
   registerUser,
   resetPassword,
-} from "../controllers/auth.controller";
+} from '../controllers/auth.controller';
+import { authLimiter } from '../middlewares/rateLimiter';
 
 const router = Router();
+router.use(authLimiter);
 
 /**
  * @swagger
@@ -47,7 +49,7 @@ const router = Router();
  *             schema:
  *               $ref: "#/components/schemas/ApiError"
  */
-router.post("/register", registerUser);
+router.post('/register', registerUser);
 
 /**
  * @swagger
@@ -86,7 +88,7 @@ router.post("/register", registerUser);
  *             schema:
  *               $ref: "#/components/schemas/ApiError"
  */
-router.post("/login", loginUser);
+router.post('/login', loginUser);
 
 /**
  * @swagger
@@ -106,7 +108,7 @@ router.post("/login", loginUser);
  *               message: {type: string, example: "Logged out successfully"}
  *               data: {type: object, nullable: true, example: null}
  */
-router.post("/logout", logoutUser);
+router.post('/logout', logoutUser);
 
 /**
  * @swagger
@@ -135,7 +137,7 @@ router.post("/logout", logoutUser);
  *             schema:
  *               $ref: "#/components/schemas/ApiError"
  */
-router.post("/refresh", refreshToken);
+router.post('/refresh', refreshToken);
 
 /**
  * @swagger
@@ -163,7 +165,7 @@ router.post("/refresh", refreshToken);
  *       "400":
  *         $ref: "#/components/responses/BadRequestError"
  */
-router.post("/forgot-password", forgotPassword);
+router.post('/forgot-password', forgotPassword);
 
 /**
  * @swagger
@@ -200,6 +202,6 @@ router.post("/forgot-password", forgotPassword);
  *             schema:
  *               $ref: "#/components/schemas/ApiError"
  */
-router.post("/reset-password", resetPassword);
+router.post('/reset-password', resetPassword);
 
 export default router;

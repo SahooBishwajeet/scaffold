@@ -1,9 +1,10 @@
-import mongoose from "mongoose";
-import { Config } from "../config";
+import mongoose from 'mongoose';
+import { Config } from '../config';
+import { authLimitStore, rateLimitStore } from '../middlewares/rateLimiter';
 
 beforeAll(async () => {
   if (!Config.DB_TEST_URI) {
-    throw new Error("DB_TEST_URI is not defined in the configuration.");
+    throw new Error('DB_TEST_URI is not defined in the configuration.');
   }
 
   await mongoose.connect(Config.DB_TEST_URI);
@@ -17,6 +18,9 @@ beforeEach(async () => {
       await collection.deleteMany({});
     }
   }
+
+  rateLimitStore.resetAll();
+  authLimitStore.resetAll();
 });
 
 afterAll(async () => {
