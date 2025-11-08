@@ -1,20 +1,20 @@
-import { Request, Response } from "express";
-import * as userService from "../services/user.service";
-import ApiError from "../utils/apiError";
-import ApiResponse from "../utils/apiResponse";
-import { asyncHandler } from "../utils/asyncHandler";
+import { Request, Response } from 'express';
+import * as userService from '../services/user.service';
+import ApiError from '../utils/apiError';
+import ApiResponse from '../utils/apiResponse';
+import { asyncHandler } from '../utils/asyncHandler';
 import {
   buildMongoQuery,
   FieldTypeMap,
   FilterCondition,
-} from "../utils/filter";
+} from '../utils/filter';
 
 const userFieldTypeMap: FieldTypeMap = {
-  name: "string",
-  email: "string",
-  role: "string",
-  createdAt: "date",
-  updatedAt: "date",
+  name: 'string',
+  email: 'string',
+  role: 'string',
+  createdAt: 'date',
+  updatedAt: 'date',
 };
 
 /**
@@ -26,7 +26,7 @@ export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
   const users = await userService.getAllUsers();
   res
     .status(200)
-    .json(new ApiResponse(200, users, "Users fetched successfully"));
+    .json(new ApiResponse(200, users, 'Users fetched successfully'));
 });
 
 /**
@@ -36,7 +36,7 @@ export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
  */
 export const getUserById = asyncHandler(async (req: Request, res: Response) => {
   const user = await userService.getUserById(req.params.id);
-  res.status(200).json(new ApiResponse(200, user, "User fetched successfully"));
+  res.status(200).json(new ApiResponse(200, user, 'User fetched successfully'));
 });
 
 /**
@@ -46,7 +46,7 @@ export const getUserById = asyncHandler(async (req: Request, res: Response) => {
  */
 export const updateUser = asyncHandler(async (req: Request, res: Response) => {
   const user = await userService.updateUser(req.params.id, req.body);
-  res.status(200).json(new ApiResponse(200, user, "User updated successfully"));
+  res.status(200).json(new ApiResponse(200, user, 'User updated successfully'));
 });
 
 /**
@@ -56,7 +56,7 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
  */
 export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
   await userService.deleteUser(req.params.id);
-  res.status(200).json(new ApiResponse(200, null, "User deleted successfully"));
+  res.status(200).json(new ApiResponse(200, null, 'User deleted successfully'));
 });
 
 /**
@@ -68,7 +68,7 @@ export const restoreUser = asyncHandler(async (req: Request, res: Response) => {
   const user = await userService.restoreUser(req.params.id);
   res
     .status(200)
-    .json(new ApiResponse(200, user, "User restored successfully"));
+    .json(new ApiResponse(200, user, 'User restored successfully'));
 });
 
 /**
@@ -81,7 +81,7 @@ export const getDeletedUsers = asyncHandler(
     const users = await userService.getDeletedUsers();
     res
       .status(200)
-      .json(new ApiResponse(200, users, "Deleted users fetched successfully"));
+      .json(new ApiResponse(200, users, 'Deleted users fetched successfully'));
   }
 );
 
@@ -91,7 +91,7 @@ export const getDeletedUsers = asyncHandler(
  * @access  Protected
  */
 export const getMe = (req: Request, res: Response) => {
-  res.status(200).json(new ApiResponse(200, req.user, "Profile fetched"));
+  res.status(200).json(new ApiResponse(200, req.user, 'Profile fetched'));
 };
 
 /**
@@ -102,7 +102,7 @@ export const getMe = (req: Request, res: Response) => {
 export const updateMyProfile = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
-      throw new ApiError(401, "Not authorized");
+      throw new ApiError(401, 'Not authorized');
     }
 
     const { name } = req.body;
@@ -111,7 +111,7 @@ export const updateMyProfile = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, user, "Profile updated successfully"));
+      .json(new ApiResponse(200, user, 'Profile updated successfully'));
   }
 );
 
@@ -123,19 +123,19 @@ export const updateMyProfile = asyncHandler(
 export const changeMyPassword = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
-      throw new ApiError(401, "Not authorized");
+      throw new ApiError(401, 'Not authorized');
     }
 
     const { oldPassword, newPassword } = req.body;
     if (!oldPassword || !newPassword) {
-      throw new ApiError(400, "Old password and new password are required");
+      throw new ApiError(400, 'Old password and new password are required');
     }
 
     await userService.changeMyPassword(req.user.id, oldPassword, newPassword);
 
     res
       .status(200)
-      .json(new ApiResponse(200, null, "Password changed successfully"));
+      .json(new ApiResponse(200, null, 'Password changed successfully'));
   }
 );
 
@@ -147,14 +147,14 @@ export const changeMyPassword = asyncHandler(
 export const deleteMyAccount = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
-      throw new ApiError(401, "Not authorized");
+      throw new ApiError(401, 'Not authorized');
     }
 
     await userService.deleteUser(req.user.id);
 
     res
       .status(200)
-      .json(new ApiResponse(200, null, "Account deleted successfully"));
+      .json(new ApiResponse(200, null, 'Account deleted successfully'));
   }
 );
 
@@ -176,6 +176,6 @@ export const adminSearchUsers = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, users, "Filtered users fetched successfully"));
+      .json(new ApiResponse(200, users, 'Filtered users fetched successfully'));
   }
 );

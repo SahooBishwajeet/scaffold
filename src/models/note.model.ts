@@ -1,10 +1,10 @@
-import { model, Schema } from "mongoose";
+import { model, Schema } from 'mongoose';
 import MongooseDelete, {
   SoftDeleteDocument,
   SoftDeleteModel,
-} from "mongoose-delete";
-import { INotebook } from "./notebook.model";
-import { IUser } from "./user.model";
+} from 'mongoose-delete';
+import { INotebook } from './notebook.model';
+import { IUser } from './user.model';
 
 export interface INote extends SoftDeleteDocument {
   id: string;
@@ -12,8 +12,8 @@ export interface INote extends SoftDeleteDocument {
   content: string;
   tags: string[];
   isPinned: boolean;
-  user: IUser["_id"];
-  notebook: INotebook["_id"];
+  user: IUser['_id'];
+  notebook: INotebook['_id'];
 }
 
 const noteSchema = new Schema<INote>(
@@ -26,12 +26,12 @@ const noteSchema = new Schema<INote>(
     },
     title: {
       type: String,
-      required: [true, "Title is required"],
+      required: [true, 'Title is required'],
       trim: true,
     },
     content: {
       type: String,
-      default: "",
+      default: '',
     },
     tags: {
       type: [String],
@@ -44,13 +44,13 @@ const noteSchema = new Schema<INote>(
     },
     user: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
       index: true,
     },
     notebook: {
       type: Schema.Types.ObjectId,
-      ref: "Notebook",
+      ref: 'Notebook',
       required: true,
       index: true,
     },
@@ -74,11 +74,11 @@ const noteSchema = new Schema<INote>(
 
 // -- Plugin for Soft Delete --
 noteSchema.plugin(MongooseDelete, {
-  overrideMethods: "all",
+  overrideMethods: 'all',
   deletedAt: true,
   deletedBy: false,
 });
 
-const NoteModel = model<INote, SoftDeleteModel<INote>>("Note", noteSchema);
+const NoteModel = model<INote, SoftDeleteModel<INote>>('Note', noteSchema);
 
 export default NoteModel;

@@ -1,6 +1,6 @@
-import { FilterQuery } from "mongoose";
-import UserModel, { IUser } from "../models/user.model";
-import ApiError from "../utils/apiError";
+import { FilterQuery } from 'mongoose';
+import UserModel, { IUser } from '../models/user.model';
+import ApiError from '../utils/apiError';
 
 /**
  * Get all users.
@@ -20,7 +20,7 @@ export const getUserById = async (id: string): Promise<IUser> => {
   const user = await UserModel.findOne({ id });
 
   if (!user) {
-    throw new ApiError(404, "User not found");
+    throw new ApiError(404, 'User not found');
   }
 
   return user;
@@ -34,7 +34,7 @@ export const getUserById = async (id: string): Promise<IUser> => {
  */
 export const updateUser = async (
   id: string,
-  updateBody: Partial<Pick<IUser, "name" | "email" | "role">>
+  updateBody: Partial<Pick<IUser, 'name' | 'email' | 'role'>>
 ): Promise<IUser> => {
   const user = await getUserById(id);
 
@@ -43,7 +43,7 @@ export const updateUser = async (
     updateBody.email !== user.email &&
     (await UserModel.findOne({ email: updateBody.email }))
   ) {
-    throw new ApiError(409, "Email already in use");
+    throw new ApiError(409, 'Email already in use');
   }
 
   Object.assign(user, updateBody);
@@ -71,7 +71,7 @@ export const restoreUser = async (id: string): Promise<IUser> => {
   const user = await UserModel.findOneDeleted({ id });
 
   if (!user) {
-    throw new ApiError(404, "User not found");
+    throw new ApiError(404, 'User not found');
   }
 
   await user.restore();
@@ -96,12 +96,12 @@ export const getDeletedUsers = async (): Promise<IUser[]> => {
  */
 export const updateMyProfile = async (
   userId: string,
-  updateBody: Partial<Pick<IUser, "name">>
+  updateBody: Partial<Pick<IUser, 'name'>>
 ): Promise<IUser> => {
   const user = await UserModel.findOne({ id: userId });
 
   if (!user) {
-    throw new ApiError(404, "User not found");
+    throw new ApiError(404, 'User not found');
   }
 
   if (updateBody.name) {
@@ -123,15 +123,15 @@ export const changeMyPassword = async (
   oldPassword: string,
   newPassword: string
 ): Promise<void> => {
-  const user = await UserModel.findOne({ id: userId }).select("+password");
+  const user = await UserModel.findOne({ id: userId }).select('+password');
 
   if (!user) {
-    throw new ApiError(404, "User not found");
+    throw new ApiError(404, 'User not found');
   }
 
   const isMatch = await user.comparePassword(oldPassword);
   if (!isMatch) {
-    throw new ApiError(401, "Old password is incorrect");
+    throw new ApiError(401, 'Old password is incorrect');
   }
 
   user.password = newPassword;

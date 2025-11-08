@@ -1,21 +1,21 @@
-import { Request, Response } from "express";
-import * as noteService from "../services/note.service";
-import ApiError from "../utils/apiError";
-import ApiResponse from "../utils/apiResponse";
-import { asyncHandler } from "../utils/asyncHandler";
+import { Request, Response } from 'express';
+import * as noteService from '../services/note.service';
+import ApiError from '../utils/apiError';
+import ApiResponse from '../utils/apiResponse';
+import { asyncHandler } from '../utils/asyncHandler';
 import {
   buildMongoQuery,
   FieldTypeMap,
   FilterCondition,
-} from "../utils/filter";
+} from '../utils/filter';
 
 const noteFieldTypeMap: FieldTypeMap = {
-  title: "string",
-  content: "string",
-  tags: "array",
-  isPinned: "boolean",
-  createdAt: "date",
-  updatedAt: "date",
+  title: 'string',
+  content: 'string',
+  tags: 'array',
+  isPinned: 'boolean',
+  createdAt: 'date',
+  updatedAt: 'date',
 };
 
 /**
@@ -28,7 +28,7 @@ export const getAllNotes = asyncHandler(async (req: Request, res: Response) => {
 
   res
     .status(200)
-    .json(new ApiResponse(200, notes, "Notes fetched successfully"));
+    .json(new ApiResponse(200, notes, 'Notes fetched successfully'));
 });
 
 /**
@@ -57,7 +57,7 @@ export const getDeletedNotes = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, notes, "Deleted notes fetched successfully"));
+      .json(new ApiResponse(200, notes, 'Deleted notes fetched successfully'));
   }
 );
 
@@ -71,7 +71,7 @@ export const restoreNote = asyncHandler(async (req: Request, res: Response) => {
 
   res
     .status(200)
-    .json(new ApiResponse(200, note, "Note restored successfully"));
+    .json(new ApiResponse(200, note, 'Note restored successfully'));
 });
 
 /**
@@ -85,7 +85,7 @@ export const adminGetNoteById = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, note, "Note fetched successfully"));
+      .json(new ApiResponse(200, note, 'Note fetched successfully'));
   }
 );
 
@@ -100,7 +100,7 @@ export const adminUpdateNote = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, note, "Note updated successfully"));
+      .json(new ApiResponse(200, note, 'Note updated successfully'));
   }
 );
 
@@ -115,7 +115,7 @@ export const adminDeleteNote = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, null, "Note deleted successfully"));
+      .json(new ApiResponse(200, null, 'Note deleted successfully'));
   }
 );
 
@@ -126,13 +126,13 @@ export const adminDeleteNote = asyncHandler(
  */
 export const createNote = asyncHandler(async (req: Request, res: Response) => {
   if (!req.user) {
-    throw new ApiError(401, "Not authorized");
+    throw new ApiError(401, 'Not authorized');
   }
   const { notebookId } = req.params;
 
   const note = await noteService.createNote(req.body, notebookId, req.user._id);
 
-  res.status(201).json(new ApiResponse(201, note, "Note created successfully"));
+  res.status(201).json(new ApiResponse(201, note, 'Note created successfully'));
 });
 
 /**
@@ -143,7 +143,7 @@ export const createNote = asyncHandler(async (req: Request, res: Response) => {
 export const getNotesInNotebook = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
-      throw new ApiError(401, "Not authorized");
+      throw new ApiError(401, 'Not authorized');
     }
 
     const { notebookId } = req.params;
@@ -155,7 +155,7 @@ export const getNotesInNotebook = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, notes, "Notes fetched successfully"));
+      .json(new ApiResponse(200, notes, 'Notes fetched successfully'));
   }
 );
 
@@ -167,14 +167,14 @@ export const getNotesInNotebook = asyncHandler(
 export const getAllMyNotes = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
-      throw new ApiError(401, "Not authorized");
+      throw new ApiError(401, 'Not authorized');
     }
 
     const notes = await noteService.getAllMyNotes(req.user._id);
 
     res
       .status(200)
-      .json(new ApiResponse(200, notes, "All notes fetched successfully"));
+      .json(new ApiResponse(200, notes, 'All notes fetched successfully'));
   }
 );
 
@@ -186,7 +186,7 @@ export const getAllMyNotes = asyncHandler(
 export const getMyNoteById = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
-      throw new ApiError(401, "Not authorized");
+      throw new ApiError(401, 'Not authorized');
     }
 
     const { noteId } = req.params;
@@ -195,7 +195,7 @@ export const getMyNoteById = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, note, "Note fetched successfully"));
+      .json(new ApiResponse(200, note, 'Note fetched successfully'));
   }
 );
 
@@ -207,7 +207,7 @@ export const getMyNoteById = asyncHandler(
 export const updateMyNote = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
-      throw new ApiError(401, "Not authorized");
+      throw new ApiError(401, 'Not authorized');
     }
 
     const { noteId } = req.params;
@@ -216,7 +216,7 @@ export const updateMyNote = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, note, "Note updated successfully"));
+      .json(new ApiResponse(200, note, 'Note updated successfully'));
   }
 );
 
@@ -227,14 +227,14 @@ export const updateMyNote = asyncHandler(
  */
 export const moveMyNote = asyncHandler(async (req: Request, res: Response) => {
   if (!req.user) {
-    throw new ApiError(401, "Not authorized");
+    throw new ApiError(401, 'Not authorized');
   }
 
   const { noteId } = req.params;
   const { newNotebookId } = req.body;
 
   if (!newNotebookId) {
-    throw new ApiError(400, "New notebook ID is required");
+    throw new ApiError(400, 'New notebook ID is required');
   }
 
   const note = await noteService.moveMyNote(
@@ -243,7 +243,7 @@ export const moveMyNote = asyncHandler(async (req: Request, res: Response) => {
     req.user._id
   );
 
-  res.status(200).json(new ApiResponse(200, note, "Note moved successfully"));
+  res.status(200).json(new ApiResponse(200, note, 'Note moved successfully'));
 });
 
 /**
@@ -254,7 +254,7 @@ export const moveMyNote = asyncHandler(async (req: Request, res: Response) => {
 export const deleteMyNote = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
-      throw new ApiError(401, "Not authorized");
+      throw new ApiError(401, 'Not authorized');
     }
 
     const { noteId } = req.params;
@@ -263,7 +263,7 @@ export const deleteMyNote = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, null, "Note deleted successfully"));
+      .json(new ApiResponse(200, null, 'Note deleted successfully'));
   }
 );
 
@@ -275,7 +275,7 @@ export const deleteMyNote = asyncHandler(
 export const searchMyNotes = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
-      throw new ApiError(401, "Not authorized");
+      throw new ApiError(401, 'Not authorized');
     }
 
     const { filter }: { filter: FilterCondition[] } = req.body;
@@ -289,7 +289,7 @@ export const searchMyNotes = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, notes, "Filtered notes fetched successfully"));
+      .json(new ApiResponse(200, notes, 'Filtered notes fetched successfully'));
   }
 );
 
@@ -301,7 +301,7 @@ export const searchMyNotes = asyncHandler(
 export const searchMyNotesInNotebook = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
-      throw new ApiError(401, "Not authorized");
+      throw new ApiError(401, 'Not authorized');
     }
 
     const { notebookId } = req.params;
@@ -320,7 +320,7 @@ export const searchMyNotesInNotebook = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, notes, "Filtered notes fetched successfully"));
+      .json(new ApiResponse(200, notes, 'Filtered notes fetched successfully'));
   }
 );
 
@@ -342,7 +342,7 @@ export const adminSearchAllNotes = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, notes, "Filtered notes fetched successfully"));
+      .json(new ApiResponse(200, notes, 'Filtered notes fetched successfully'));
   }
 );
 
@@ -368,6 +368,6 @@ export const adminSearchNotesForUser = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, notes, "Filtered notes fetched successfully"));
+      .json(new ApiResponse(200, notes, 'Filtered notes fetched successfully'));
   }
 );

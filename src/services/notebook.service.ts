@@ -1,13 +1,13 @@
-import { FilterQuery } from "mongoose";
-import NotebookModel, { INotebook } from "../models/notebook.model";
-import UserModel, { IUser } from "../models/user.model";
-import ApiError from "../utils/apiError";
+import { FilterQuery } from 'mongoose';
+import NotebookModel, { INotebook } from '../models/notebook.model';
+import UserModel, { IUser } from '../models/user.model';
+import ApiError from '../utils/apiError';
 
-type CreateNotebookInput = Pick<INotebook, "name" | "description">;
+type CreateNotebookInput = Pick<INotebook, 'name' | 'description'>;
 type UpdateNotebookInput = Partial<
-  Pick<INotebook, "name" | "description" | "isPinned">
+  Pick<INotebook, 'name' | 'description' | 'isPinned'>
 >;
-const userPopulateFields = "id name email";
+const userPopulateFields = 'id name email';
 
 /**
  * Get all notebooks from all users
@@ -15,7 +15,7 @@ const userPopulateFields = "id name email";
  */
 export const getAllNotebooks = async (): Promise<INotebook[]> => {
   const notebooks = await NotebookModel.find().populate(
-    "user",
+    'user',
     userPopulateFields
   );
   return notebooks;
@@ -31,12 +31,12 @@ export const getNotebooksForUser = async (
 ): Promise<INotebook[]> => {
   const user = await UserModel.findOne({ id: userId });
   if (!user) {
-    throw new ApiError(404, "User not found");
+    throw new ApiError(404, 'User not found');
   }
 
   const notebooks = await NotebookModel.find({
     user: user._id,
-  }).populate("user", userPopulateFields);
+  }).populate('user', userPopulateFields);
 
   return notebooks;
 };
@@ -54,12 +54,12 @@ export const adminUpdateNotebook = async (
   const notebook = await NotebookModel.findOne({ id: notebookId });
 
   if (!notebook) {
-    throw new ApiError(404, "Notebook not found");
+    throw new ApiError(404, 'Notebook not found');
   }
 
   Object.assign(notebook, updateBody);
   await notebook.save();
-  await notebook.populate("user", userPopulateFields);
+  await notebook.populate('user', userPopulateFields);
   return notebook;
 };
 
@@ -73,7 +73,7 @@ export const adminDeleteNotebook = async (
   const notebook = await NotebookModel.findOne({ id: notebookId });
 
   if (!notebook) {
-    throw new ApiError(404, "Notebook not found");
+    throw new ApiError(404, 'Notebook not found');
   }
 
   await notebook.delete();
@@ -85,7 +85,7 @@ export const adminDeleteNotebook = async (
  */
 export const getDeletedNotebooks = async (): Promise<INotebook[]> => {
   const notebooks = await NotebookModel.findDeleted().populate(
-    "user",
+    'user',
     userPopulateFields
   );
   return notebooks;
@@ -102,11 +102,11 @@ export const restoreNotebook = async (
   const notebook = await NotebookModel.findOneDeleted({ id: notebookId });
 
   if (!notebook) {
-    throw new ApiError(404, "Notebook not found");
+    throw new ApiError(404, 'Notebook not found');
   }
 
   await notebook.restore();
-  notebook.populate("user", userPopulateFields);
+  notebook.populate('user', userPopulateFields);
   return notebook;
 };
 
@@ -118,18 +118,18 @@ export const restoreNotebook = async (
  */
 export const createNotebook = async (
   input: CreateNotebookInput,
-  userId: IUser["_id"]
+  userId: IUser['_id']
 ): Promise<INotebook> => {
   const { name, description } = input;
 
   const newNotebook = new NotebookModel({
     name,
-    description: description || "",
+    description: description || '',
     user: userId,
   });
 
   await newNotebook.save();
-  await newNotebook.populate("user", userPopulateFields);
+  await newNotebook.populate('user', userPopulateFields);
   return newNotebook;
 };
 
@@ -139,10 +139,10 @@ export const createNotebook = async (
  * @returns The list of notebooks
  */
 export const getMyNotebooks = async (
-  userId: IUser["_id"]
+  userId: IUser['_id']
 ): Promise<INotebook[]> => {
   const notebooks = await NotebookModel.find({ user: userId }).populate(
-    "user",
+    'user',
     userPopulateFields
   );
   return notebooks;
@@ -156,12 +156,12 @@ export const getMyNotebooks = async (
  */
 export const getMyNotebookById = async (
   notebookId: string,
-  userId: IUser["_id"]
+  userId: IUser['_id']
 ): Promise<INotebook> => {
   const notebook = await NotebookModel.findOne({
     id: notebookId,
     user: userId,
-  }).populate("user", userPopulateFields);
+  }).populate('user', userPopulateFields);
 
   if (!notebook) {
     throw new ApiError(
@@ -182,7 +182,7 @@ export const getMyNotebookById = async (
  */
 export const updateMyNotebook = async (
   notebookId: string,
-  userId: IUser["_id"],
+  userId: IUser['_id'],
   updateBody: UpdateNotebookInput
 ): Promise<INotebook> => {
   const notebook = await getMyNotebookById(notebookId, userId);
@@ -200,7 +200,7 @@ export const updateMyNotebook = async (
  */
 export const deleteMyNotebook = async (
   notebookId: string,
-  userId: IUser["_id"]
+  userId: IUser['_id']
 ): Promise<void> => {
   const notebook = await getMyNotebookById(notebookId, userId);
 
@@ -214,7 +214,7 @@ export const deleteMyNotebook = async (
  * @returns The list of notebooks matching the criteria
  */
 export const searchMyNotebooks = async (
-  userId: IUser["_id"],
+  userId: IUser['_id'],
   filterQuery: FilterQuery<any>
 ): Promise<INotebook[]> => {
   // Ensure that only notebooks belonging to the user are fetched
@@ -225,7 +225,7 @@ export const searchMyNotebooks = async (
   };
 
   const notebooks = await NotebookModel.find(finalQuery).populate(
-    "user",
+    'user',
     userPopulateFields
   );
   return notebooks;
@@ -240,7 +240,7 @@ export const adminSearchAllNotebooks = async (
   filterQuery: FilterQuery<any>
 ): Promise<INotebook[]> => {
   const notes = await NotebookModel.find(filterQuery).populate(
-    "user",
+    'user',
     userPopulateFields
   );
   return notes;
@@ -258,7 +258,7 @@ export const adminSearchNotebooksForUser = async (
 ): Promise<INotebook[]> => {
   const user = await UserModel.findOne({ id: userId });
   if (!user) {
-    throw new ApiError(404, "User not found");
+    throw new ApiError(404, 'User not found');
   }
 
   const securityQuery = { user: user._id };
@@ -267,7 +267,7 @@ export const adminSearchNotebooksForUser = async (
   };
 
   const notebooks = await NotebookModel.find(finalQuery).populate(
-    "user",
+    'user',
     userPopulateFields
   );
   return notebooks;

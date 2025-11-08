@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import { Config } from "../config";
+import { Request, Response } from 'express';
+import { Config } from '../config';
 import {
   forgotPasswordService,
   login as loginUserService,
@@ -7,17 +7,17 @@ import {
   refreshAccessToken,
   register as registerUserService,
   resetPasswordService,
-} from "../services/auth.service";
-import ApiError from "../utils/apiError";
-import ApiResponse from "../utils/apiResponse";
-import { asyncHandler } from "../utils/asyncHandler";
+} from '../services/auth.service';
+import ApiError from '../utils/apiError';
+import ApiResponse from '../utils/apiResponse';
+import { asyncHandler } from '../utils/asyncHandler';
 
 const sendRefreshTokenCookie = (res: Response, token: string) => {
-  res.cookie("refreshToken", token, {
+  res.cookie('refreshToken', token, {
     httpOnly: true,
     secure: Config.IS_PRODUCTION,
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days (Same as refresh token expiry)
-    sameSite: "strict",
+    sameSite: 'strict',
   });
 };
 
@@ -44,7 +44,7 @@ export const registerUser = asyncHandler(
         new ApiResponse(
           201,
           { user, accessToken },
-          "User registered successfully"
+          'User registered successfully'
         )
       );
   }
@@ -59,8 +59,8 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   const loginInfo = {
-    ip: req.ip || "Unknown IP",
-    userAgent: req.headers["user-agent"] || "Unknown User-Agent",
+    ip: req.ip || 'Unknown IP',
+    userAgent: req.headers['user-agent'] || 'Unknown User-Agent',
   };
 
   const { user, accessToken, refreshToken } = await loginUserService(
@@ -73,7 +73,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   res
     .status(200)
     .json(
-      new ApiResponse(200, { user, accessToken }, "User logged in successfully")
+      new ApiResponse(200, { user, accessToken }, 'User logged in successfully')
     );
 });
 
@@ -94,7 +94,7 @@ export const refreshToken = asyncHandler(
         new ApiResponse(
           200,
           { accessToken },
-          "Access token refreshed successfully"
+          'Access token refreshed successfully'
         )
       );
   }
@@ -109,15 +109,15 @@ export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
   const incomingRefreshToken = req.cookies.refreshToken;
   await logout(incomingRefreshToken);
 
-  res.clearCookie("refreshToken", {
+  res.clearCookie('refreshToken', {
     httpOnly: true,
     secure: Config.IS_PRODUCTION,
-    sameSite: "strict",
+    sameSite: 'strict',
   });
 
   res
     .status(200)
-    .json(new ApiResponse(200, null, "User logged out successfully"));
+    .json(new ApiResponse(200, null, 'User logged out successfully'));
 });
 
 /**
@@ -129,7 +129,7 @@ export const forgotPassword = asyncHandler(
   async (req: Request, res: Response) => {
     const { email } = req.body;
     if (!email) {
-      throw new ApiError(400, "Email is required");
+      throw new ApiError(400, 'Email is required');
     }
 
     await forgotPasswordService(email);
@@ -140,7 +140,7 @@ export const forgotPassword = asyncHandler(
         new ApiResponse(
           200,
           null,
-          "If that email address is in our database, we will send you an email to reset your password"
+          'If that email address is in our database, we will send you an email to reset your password'
         )
       );
   }
@@ -156,7 +156,7 @@ export const resetPassword = asyncHandler(
     const { token, newPassword } = req.body;
 
     if (!token || !newPassword) {
-      throw new ApiError(400, "Token and new password are required");
+      throw new ApiError(400, 'Token and new password are required');
     }
 
     const { user, accessToken, refreshToken } = await resetPasswordService(
@@ -172,7 +172,7 @@ export const resetPassword = asyncHandler(
         new ApiResponse(
           200,
           { user, accessToken },
-          "Password has been reset successfully"
+          'Password has been reset successfully'
         )
       );
   }

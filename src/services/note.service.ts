@@ -1,16 +1,16 @@
-import { FilterQuery } from "mongoose";
-import NoteModel, { INote } from "../models/note.model";
-import NotebookModel, { INotebook } from "../models/notebook.model";
-import UserModel, { IUser } from "../models/user.model";
-import ApiError from "../utils/apiError";
+import { FilterQuery } from 'mongoose';
+import NoteModel, { INote } from '../models/note.model';
+import NotebookModel, { INotebook } from '../models/notebook.model';
+import UserModel, { IUser } from '../models/user.model';
+import ApiError from '../utils/apiError';
 
-type CreateNoteInput = Pick<INote, "title" | "content" | "tags" | "isPinned">;
+type CreateNoteInput = Pick<INote, 'title' | 'content' | 'tags' | 'isPinned'>;
 type UpdateNoteInput = Partial<CreateNoteInput>;
-const userPopulateFields = "id name email";
-const notebookPopulateFields = "id name";
+const userPopulateFields = 'id name email';
+const notebookPopulateFields = 'id name';
 const fullPopulate = [
-  { path: "user", select: userPopulateFields },
-  { path: "notebook", select: notebookPopulateFields },
+  { path: 'user', select: userPopulateFields },
+  { path: 'notebook', select: notebookPopulateFields },
 ];
 
 /**
@@ -30,7 +30,7 @@ export const getAllNotes = async (): Promise<INote[]> => {
 export const getNotesForUser = async (userId: string): Promise<INote[]> => {
   const user = await UserModel.findOne({ id: userId });
   if (!user) {
-    throw new ApiError(404, "User not found");
+    throw new ApiError(404, 'User not found');
   }
 
   const notes = await NoteModel.find({
@@ -56,7 +56,7 @@ export const getDeletedNotes = async (): Promise<INote[]> => {
 export const restoreNote = async (noteId: string): Promise<INote> => {
   const note = await NoteModel.findOneDeleted({ id: noteId });
   if (!note) {
-    throw new ApiError(404, "Note not found in deleted items");
+    throw new ApiError(404, 'Note not found in deleted items');
   }
 
   await note.restore();
@@ -72,7 +72,7 @@ export const restoreNote = async (noteId: string): Promise<INote> => {
 export const adminGetNoteById = async (noteId: string): Promise<INote> => {
   const note = await NoteModel.findOne({ id: noteId }).populate(fullPopulate);
   if (!note) {
-    throw new ApiError(404, "Note not found");
+    throw new ApiError(404, 'Note not found');
   }
   return note;
 };
@@ -114,7 +114,7 @@ export const adminDeleteNote = async (noteId: string): Promise<void> => {
 export const createNote = async (
   input: CreateNoteInput,
   notebookId: string,
-  userId: IUser["_id"]
+  userId: IUser['_id']
 ): Promise<INote> => {
   const notebook = await NotebookModel.findOne({
     id: notebookId,
@@ -146,7 +146,7 @@ export const createNote = async (
  */
 export const getNotesInNotebook = async (
   notebookId: string,
-  userId: IUser["_id"]
+  userId: IUser['_id']
 ): Promise<INote[]> => {
   const notebook = await NotebookModel.findOne({
     id: notebookId,
@@ -170,7 +170,7 @@ export const getNotesInNotebook = async (
  * @param userId - The ID of the user
  * @returns The list of all notes for the user
  */
-export const getAllMyNotes = async (userId: IUser["_id"]): Promise<INote[]> => {
+export const getAllMyNotes = async (userId: IUser['_id']): Promise<INote[]> => {
   const notes = await NoteModel.find({
     user: userId,
   }).populate(fullPopulate);
@@ -185,7 +185,7 @@ export const getAllMyNotes = async (userId: IUser["_id"]): Promise<INote[]> => {
  */
 export const getMyNoteById = async (
   noteId: string,
-  userId: IUser["_id"]
+  userId: IUser['_id']
 ): Promise<INote> => {
   const note = await NoteModel.findOne({
     id: noteId,
@@ -208,7 +208,7 @@ export const getMyNoteById = async (
  */
 export const updateMyNote = async (
   noteId: string,
-  userId: IUser["_id"],
+  userId: IUser['_id'],
   updateBody: UpdateNoteInput
 ): Promise<INote> => {
   const note = await getMyNoteById(noteId, userId);
@@ -228,7 +228,7 @@ export const updateMyNote = async (
 export const moveMyNote = async (
   noteId: string,
   newNotebookId: string,
-  userId: IUser["_id"]
+  userId: IUser['_id']
 ): Promise<INote> => {
   const note = await getMyNoteById(noteId, userId);
 
@@ -257,7 +257,7 @@ export const moveMyNote = async (
  */
 export const deleteMyNote = async (
   noteId: string,
-  userId: IUser["_id"]
+  userId: IUser['_id']
 ): Promise<void> => {
   const note = await getMyNoteById(noteId, userId);
 
@@ -271,7 +271,7 @@ export const deleteMyNote = async (
  * @returns The list of notes matching the criteria
  */
 export const searchMyNotes = async (
-  userId: IUser["_id"],
+  userId: IUser['_id'],
   filterQuery: FilterQuery<any>
 ): Promise<INote[]> => {
   // Ensure that only notes belonging to the user are fetched
@@ -293,8 +293,8 @@ export const searchMyNotes = async (
  * @returns The list of notes matching the criteria
  */
 export const searchMyNotesInNotebook = async (
-  userId: IUser["_id"],
-  notebookId: INotebook["_id"],
+  userId: IUser['_id'],
+  notebookId: INotebook['_id'],
   filterQuery: FilterQuery<any>
 ): Promise<INote[]> => {
   const notebook = await NotebookModel.findOne({
@@ -345,7 +345,7 @@ export const adminSearchNotesForUser = async (
 ): Promise<INote[]> => {
   const user = await UserModel.findOne({ id: userId });
   if (!user) {
-    throw new ApiError(404, "User not found");
+    throw new ApiError(404, 'User not found');
   }
 
   const securityQuery = { user: user._id };

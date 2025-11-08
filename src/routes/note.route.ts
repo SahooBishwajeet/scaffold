@@ -1,7 +1,7 @@
-import { Router } from "express";
-import * as noteController from "../controllers/note.controller";
-import { authorizeRoles, protect } from "../middlewares/auth.middleware";
-import { UserRole } from "../models/user.model";
+import { Router } from 'express';
+import * as noteController from '../controllers/note.controller';
+import { authorizeRoles, protect } from '../middlewares/auth.middleware';
+import { UserRole } from '../models/user.model';
 
 const router = Router();
 
@@ -38,7 +38,7 @@ router.use(protect);
  *         $ref: '#/components/responses/ForbiddenError'
  */
 router.get(
-  "/all/notes",
+  '/all/notes',
   authorizeRoles(UserRole.ADMIN),
   noteController.getAllNotes
 );
@@ -72,7 +72,7 @@ router.get(
  *         $ref: '#/components/responses/ForbiddenError'
  */
 router.get(
-  "/all/deleted",
+  '/all/deleted',
   authorizeRoles(UserRole.ADMIN),
   noteController.getDeletedNotes
 );
@@ -114,7 +114,7 @@ router.get(
  *         $ref: '#/components/responses/ForbiddenError'
  */
 router.post(
-  "/admin/search",
+  '/admin/search',
   authorizeRoles(UserRole.ADMIN),
   noteController.adminSearchAllNotes
 );
@@ -147,7 +147,7 @@ router.post(
  *       "401":
  *         $ref: '#/components/responses/UnauthorizedError'
  */
-router.get("/", noteController.getAllMyNotes);
+router.get('/', noteController.getAllMyNotes);
 
 /**
  * @swagger
@@ -183,7 +183,7 @@ router.get("/", noteController.getAllMyNotes);
  *       "401":
  *         $ref: '#/components/responses/UnauthorizedError'
  */
-router.post("/search", noteController.searchMyNotes);
+router.post('/search', noteController.searchMyNotes);
 
 /**
  * @swagger
@@ -229,7 +229,7 @@ router.post("/search", noteController.searchMyNotes);
  *             schema:
  *               $ref: '#/components/schemas/ApiError'
  */
-router.put("/:noteId/move", noteController.moveMyNote);
+router.put('/:noteId/move', noteController.moveMyNote);
 
 // -- Admin-only routes (Parameterized) --
 
@@ -268,7 +268,7 @@ router.put("/:noteId/move", noteController.moveMyNote);
  *               $ref: '#/components/schemas/ApiError'
  */
 router.put(
-  "/:noteId/restore",
+  '/:noteId/restore',
   authorizeRoles(UserRole.ADMIN),
   noteController.restoreNote
 );
@@ -361,7 +361,7 @@ router.put(
  *         $ref: '#/components/responses/NotFoundError'
  */
 router
-  .route("/admin/:noteId")
+  .route('/admin/:noteId')
   .get(authorizeRoles(UserRole.ADMIN), noteController.adminGetNoteById)
   .put(authorizeRoles(UserRole.ADMIN), noteController.adminUpdateNote)
   .delete(authorizeRoles(UserRole.ADMIN), noteController.adminDeleteNote);
@@ -450,7 +450,7 @@ router
  *         $ref: '#/components/responses/NotFoundError'
  */
 router
-  .route("/:noteId")
+  .route('/:noteId')
   .get(noteController.getMyNoteById)
   .put(noteController.updateMyNote)
   .delete(noteController.deleteMyNote);

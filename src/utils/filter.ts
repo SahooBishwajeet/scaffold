@@ -1,9 +1,9 @@
-import { FilterQuery } from "mongoose";
+import { FilterQuery } from 'mongoose';
 
 export class InvalidFilterError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "InvalidFilterError";
+    this.name = 'InvalidFilterError';
   }
 }
 
@@ -20,16 +20,16 @@ export interface FilterCondition {
 }
 
 export interface FieldTypeMap {
-  [fieldName: string]: "string" | "number" | "date" | "boolean" | "array";
+  [fieldName: string]: 'string' | 'number' | 'date' | 'boolean' | 'array';
 }
 
 function escapeRegExp(str: string): string {
-  if (str == null) return "";
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  if (str == null) return '';
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 const isValueValid = (val: any) =>
-  val !== null && val !== undefined && val !== "";
+  val !== null && val !== undefined && val !== '';
 
 /**
  * Validates and transforms a client-side filter array into a MongoDB query object.
@@ -111,7 +111,7 @@ export const buildMongoQuery = (
     const fieldType = typeMap[field];
 
     if (
-      !["empty", "not_empty"].includes(operator) &&
+      !['empty', 'not_empty'].includes(operator) &&
       (!values || values.length === 0)
     ) {
       return {
@@ -125,10 +125,10 @@ export const buildMongoQuery = (
     try {
       switch (operator) {
         // --- 'is' Operator (For text, date, boolean, select, etc.) ---
-        case "is": {
-          if (fieldType === "date") {
+        case 'is': {
+          if (fieldType === 'date') {
             if (!isValueValid(value))
-              throw new Error("A valid date value is required.");
+              throw new Error('A valid date value is required.');
 
             const startDate = new Date(value);
             startDate.setHours(0, 0, 0, 0);
@@ -136,7 +136,7 @@ export const buildMongoQuery = (
             endDate.setHours(23, 59, 59, 999);
 
             if (isNaN(startDate.getTime()))
-              throw new Error("Invalid date format provided.");
+              throw new Error('Invalid date format provided.');
 
             // Logic: "is between the start and end of the day"
             queryParts.push({ [field]: { $gte: startDate, $lte: endDate } });
@@ -147,16 +147,16 @@ export const buildMongoQuery = (
         }
 
         // --- 'between' Operator (For numbers and dates) ---
-        case "between": {
+        case 'between': {
           if (!isValueValid(value) || !isValueValid(value2)) {
             throw new Error("Operator 'between' requires two valid values.");
           }
 
-          if (fieldType === "number") {
+          if (fieldType === 'number') {
             queryParts.push({
               [field]: { $gte: Number(value), $lte: Number(value2) },
             });
-          } else if (fieldType === "array") {
+          } else if (fieldType === 'array') {
             // For 'numberrange' type
             // Assumes field is stored as [min, max] (e.g., [10, 50])
             // Logic: storedMin >= value AND storedMax <= value2
@@ -178,7 +178,7 @@ export const buildMongoQuery = (
         }
 
         // --- 'not_between' Operator (For dates only ) ---
-        case "not_between": {
+        case 'not_between': {
           if (!isValueValid(value) || !isValueValid(value2)) {
             throw new Error(
               "Operator 'not_between' requires two valid values."
@@ -202,8 +202,8 @@ export const buildMongoQuery = (
         }
 
         // --- 'overlaps' Operator (For array ranges only) ---
-        case "overlaps": {
-          if (fieldType !== "array")
+        case 'overlaps': {
+          if (fieldType !== 'array')
             throw new Error(`Operator '${operator}' is only for array fields.`);
           if (!isValueValid(value) || !isValueValid(value2)) {
             throw new Error(
@@ -222,8 +222,8 @@ export const buildMongoQuery = (
           break;
         }
 
-        case "includes_all": {
-          if (fieldType !== "array")
+        case 'includes_all': {
+          if (fieldType !== 'array')
             throw new Error(`Operator '${operator}' is only for array fields.`);
           const validValues = values.filter(isValueValid);
           if (validValues.length === 0)
@@ -235,8 +235,8 @@ export const buildMongoQuery = (
           break;
         }
 
-        case "excludes_all": {
-          if (fieldType !== "array")
+        case 'excludes_all': {
+          if (fieldType !== 'array')
             throw new Error(`Operator '${operator}' is only for array fields.`);
           const validValues = values.filter(isValueValid);
           if (validValues.length === 0)
@@ -249,10 +249,10 @@ export const buildMongoQuery = (
         }
 
         // --- Text / Email / URL / Tel Operators ---
-        case "is_not": {
-          if (fieldType === "date") {
+        case 'is_not': {
+          if (fieldType === 'date') {
             if (!isValueValid(value))
-              throw new Error("A valid date value is required.");
+              throw new Error('A valid date value is required.');
 
             const startDate = new Date(value);
             startDate.setHours(0, 0, 0, 0);
@@ -260,7 +260,7 @@ export const buildMongoQuery = (
             endDate.setHours(23, 59, 59, 999);
 
             if (isNaN(startDate.getTime()))
-              throw new Error("Invalid date format provided.");
+              throw new Error('Invalid date format provided.');
 
             // Logic: "is before the start of the day OR after the end of the day"
             queryParts.push({
@@ -275,11 +275,11 @@ export const buildMongoQuery = (
           break;
           break;
         }
-        case "contains": {
+        case 'contains': {
           if (!isValueValid(value))
             throw new Error(`Operator '${operator}' requires a valid value.`);
 
-          if (fieldType === "array") {
+          if (fieldType === 'array') {
             // For 'numberrange' type
             // Assumes field is stored as [min, max]
             // Logic: storedMin <= value AND storedMax >= value
@@ -291,47 +291,47 @@ export const buildMongoQuery = (
             });
           } else {
             queryParts.push({
-              [field]: { $regex: new RegExp(escapeRegExp(value), "i") },
+              [field]: { $regex: new RegExp(escapeRegExp(value), 'i') },
             });
           }
           break;
         }
-        case "not_contains": {
+        case 'not_contains': {
           if (!isValueValid(value))
             throw new Error(`Operator '${operator}' requires a valid value.`);
 
           queryParts.push({
             [field]: {
-              $not: { $regex: new RegExp(escapeRegExp(String(value)), "i") },
+              $not: { $regex: new RegExp(escapeRegExp(String(value)), 'i') },
             },
           });
           break;
         }
-        case "starts_with": {
+        case 'starts_with': {
           if (!isValueValid(value))
             throw new Error(`Operator '${operator}' requires a valid value.`);
 
           queryParts.push({
             [field]: {
-              $regex: new RegExp("^" + escapeRegExp(String(value)), "i"),
+              $regex: new RegExp('^' + escapeRegExp(String(value)), 'i'),
             },
           });
           break;
         }
-        case "ends_with": {
+        case 'ends_with': {
           if (!isValueValid(value))
             throw new Error(`Operator '${operator}' requires a valid value.`);
 
           queryParts.push({
             [field]: {
-              $regex: new RegExp(escapeRegExp(String(value)) + "$", "i"),
+              $regex: new RegExp(escapeRegExp(String(value)) + '$', 'i'),
             },
           });
           break;
         }
 
         // --- Number Operators ---
-        case "equals": {
+        case 'equals': {
           if (!isValueValid(value))
             throw new Error(
               `Operator '${operator}' requires a valid number value.`
@@ -340,7 +340,7 @@ export const buildMongoQuery = (
           queryParts.push({ [field]: { $eq: Number(value) } });
           break;
         }
-        case "not_equals": {
+        case 'not_equals': {
           if (!isValueValid(value))
             throw new Error(
               `Operator '${operator}' requires a valid number value.`
@@ -349,7 +349,7 @@ export const buildMongoQuery = (
           queryParts.push({ [field]: { $ne: Number(value) } });
           break;
         }
-        case "greater_than": {
+        case 'greater_than': {
           if (!isValueValid(value))
             throw new Error(
               `Operator '${operator}' requires a valid number value.`
@@ -358,7 +358,7 @@ export const buildMongoQuery = (
           queryParts.push({ [field]: { $gt: Number(value) } });
           break;
         }
-        case "less_than": {
+        case 'less_than': {
           if (!isValueValid(value))
             throw new Error(
               `Operator '${operator}' requires a valid number value.`
@@ -369,7 +369,7 @@ export const buildMongoQuery = (
         }
 
         // --- Date / Datetime Operators ---
-        case "before": {
+        case 'before': {
           if (!isValueValid(value))
             throw new Error(
               `Operator '${operator}' requires a valid date value.`
@@ -379,7 +379,7 @@ export const buildMongoQuery = (
           break;
         }
 
-        case "after": {
+        case 'after': {
           if (!isValueValid(value))
             throw new Error(
               `Operator '${operator}' requires a valid date value.`
@@ -390,7 +390,7 @@ export const buildMongoQuery = (
         }
 
         // --- Select / Multiselect Operators ---
-        case "is_any_of": {
+        case 'is_any_of': {
           const validValues = values.filter(isValueValid);
           if (validValues.length === 0)
             throw new Error(
@@ -399,7 +399,7 @@ export const buildMongoQuery = (
           queryParts.push({ [field]: { $in: validValues } });
           break;
         }
-        case "is_not_any_of": {
+        case 'is_not_any_of': {
           const validValues = values.filter(isValueValid);
           if (validValues.length === 0)
             throw new Error(
@@ -410,18 +410,18 @@ export const buildMongoQuery = (
         }
 
         // --- Empty / Not Empty (Works for all types) ---
-        case "empty": {
-          if (fieldType === "string") {
-            queryParts.push({ [field]: { $in: [null, undefined, ""] } });
+        case 'empty': {
+          if (fieldType === 'string') {
+            queryParts.push({ [field]: { $in: [null, undefined, ''] } });
           } else {
             queryParts.push({ [field]: { $in: [null, undefined] } });
           }
           break;
         }
 
-        case "not_empty": {
-          if (fieldType === "string") {
-            queryParts.push({ [field]: { $nin: [null, undefined, ""] } });
+        case 'not_empty': {
+          if (fieldType === 'string') {
+            queryParts.push({ [field]: { $nin: [null, undefined, ''] } });
           } else {
             queryParts.push({ [field]: { $nin: [null, undefined] } });
           }

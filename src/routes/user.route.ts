@@ -1,9 +1,9 @@
-import { Router } from "express";
-import * as noteController from "../controllers/note.controller";
-import * as notebookController from "../controllers/notebook.controller";
-import * as userController from "../controllers/user.controller";
-import { authorizeRoles, protect } from "../middlewares/auth.middleware";
-import { UserRole } from "../models/user.model";
+import { Router } from 'express';
+import * as noteController from '../controllers/note.controller';
+import * as notebookController from '../controllers/notebook.controller';
+import * as userController from '../controllers/user.controller';
+import { authorizeRoles, protect } from '../middlewares/auth.middleware';
+import { UserRole } from '../models/user.model';
 
 const router = Router();
 
@@ -97,7 +97,7 @@ router.use(protect);
  *         $ref: '#/components/responses/UnauthorizedError'
  */
 router
-  .route("/me")
+  .route('/me')
   .get(userController.getMe)
   .put(userController.updateMyProfile)
   .delete(userController.deleteMyAccount);
@@ -148,7 +148,7 @@ router
  *             schema:
  *               $ref: '#/components/schemas/ApiError'
  */
-router.put("/me/password", userController.changeMyPassword);
+router.put('/me/password', userController.changeMyPassword);
 
 // --- Admin-only routes ---
 router.use(authorizeRoles(UserRole.ADMIN));
@@ -185,7 +185,7 @@ router.use(authorizeRoles(UserRole.ADMIN));
  *       "403":
  *         $ref: '#/components/responses/ForbiddenError'
  */
-router.get("/", userController.getAllUsers);
+router.get('/', userController.getAllUsers);
 
 /**
  * @swagger
@@ -219,7 +219,7 @@ router.get("/", userController.getAllUsers);
  *       "403":
  *         $ref: '#/components/responses/ForbiddenError'
  */
-router.get("/deleted", userController.getDeletedUsers);
+router.get('/deleted', userController.getDeletedUsers);
 
 /**
  * @swagger
@@ -261,7 +261,7 @@ router.get("/deleted", userController.getDeletedUsers);
  *       "403":
  *         $ref: '#/components/responses/ForbiddenError'
  */
-router.post("/search", userController.adminSearchUsers);
+router.post('/search', userController.adminSearchUsers);
 
 /**
  * @swagger
@@ -297,7 +297,7 @@ router.post("/search", userController.adminSearchUsers);
  *               schema:
  *                 $ref: '#/components/schemas/ApiError'
  */
-router.put("/:id/restore", userController.restoreUser);
+router.put('/:id/restore', userController.restoreUser);
 
 /**
  * @swagger
@@ -335,7 +335,7 @@ router.put("/:id/restore", userController.restoreUser);
  *       "404":
  *         $ref: '#/components/responses/NotFoundError'
  */
-router.get("/:userId/notebooks", notebookController.getNotebooksForUser);
+router.get('/:userId/notebooks', notebookController.getNotebooksForUser);
 
 /**
  * @swagger
@@ -382,7 +382,7 @@ router.get("/:userId/notebooks", notebookController.getNotebooksForUser);
  *         $ref: '#/components/responses/NotFoundError'
  */
 router.post(
-  "/:userId/notebooks/search",
+  '/:userId/notebooks/search',
   notebookController.adminSearchNotebooksForUser
 );
 
@@ -422,7 +422,7 @@ router.post(
  *       "404":
  *         $ref: '#/components/responses/NotFoundError'
  */
-router.get("/:userId/notes", noteController.getNotesForUser);
+router.get('/:userId/notes', noteController.getNotesForUser);
 
 /**
  * @swagger
@@ -468,7 +468,7 @@ router.get("/:userId/notes", noteController.getNotesForUser);
  *       "404":
  *         $ref: '#/components/responses/NotFoundError'
  */
-router.post("/:userId/notes/search", noteController.adminSearchNotesForUser);
+router.post('/:userId/notes/search', noteController.adminSearchNotesForUser);
 
 /**
  * @swagger
@@ -581,7 +581,7 @@ router.post("/:userId/notes/search", noteController.adminSearchNotesForUser);
  *         $ref: '#/components/responses/NotFoundError'
  */
 router
-  .route("/:id")
+  .route('/:id')
   .get(userController.getUserById)
   .put(userController.updateUser)
   .delete(userController.deleteUser);

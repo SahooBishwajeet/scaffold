@@ -1,16 +1,16 @@
-import { model, Schema } from "mongoose";
+import { model, Schema } from 'mongoose';
 import MongooseDelete, {
   SoftDeleteDocument,
   SoftDeleteModel,
-} from "mongoose-delete";
-import { IUser } from "./user.model";
+} from 'mongoose-delete';
+import { IUser } from './user.model';
 
 export interface INotebook extends SoftDeleteDocument {
   id: string;
   name: string;
   description?: string;
   isPinned: boolean;
-  user: IUser["_id"];
+  user: IUser['_id'];
 }
 
 const notebookSchema = new Schema<INotebook>(
@@ -23,13 +23,13 @@ const notebookSchema = new Schema<INotebook>(
     },
     name: {
       type: String,
-      required: [true, "Notebook name is required"],
+      required: [true, 'Notebook name is required'],
       trim: true,
     },
     description: {
       type: String,
       trim: true,
-      default: "",
+      default: '',
     },
     isPinned: {
       type: Boolean,
@@ -37,7 +37,7 @@ const notebookSchema = new Schema<INotebook>(
     },
     user: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
       index: true,
     },
@@ -59,13 +59,13 @@ const notebookSchema = new Schema<INotebook>(
 
 // -- Plugin for Soft Delete --
 notebookSchema.plugin(MongooseDelete, {
-  overrideMethods: "all",
+  overrideMethods: 'all',
   deletedAt: true,
   deletedBy: false,
 });
 
 const NotebookModel = model<INotebook, SoftDeleteModel<INotebook>>(
-  "Notebook",
+  'Notebook',
   notebookSchema
 );
 

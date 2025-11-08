@@ -1,11 +1,11 @@
-import nodemailer from "nodemailer";
-import { Config } from "../config";
-import logger from "../utils/logger";
+import nodemailer from 'nodemailer';
+import { Config } from '../config';
+import logger from '../utils/logger';
 import {
   getLoginAlertEmailHtml,
   getPasswordResetEmailHtml,
   getWelcomeEmailHtml,
-} from "../utils/mailTemplates";
+} from '../utils/mailTemplates';
 
 const transport = nodemailer.createTransport({
   host: Config.MAIL_HOST,
@@ -20,9 +20,9 @@ const transport = nodemailer.createTransport({
 export const verifyMailConnection = async () => {
   try {
     await transport.verify();
-    logger.info("[Mail] Mail server connection verified successfully");
+    logger.info('[Mail] Mail server connection verified successfully');
   } catch (error) {
-    logger.error("[Mail] Mail server connection verification failed", error);
+    logger.error('[Mail] Mail server connection verification failed', error);
     process.exit(1);
   }
 };
@@ -64,7 +64,7 @@ export const sendEmail = (options: IMailOptions) => {
  * @param name - Recipient name
  */
 export const sendWelcomeEmail = (email: string, name: string) => {
-  const subject = "Welcome to Our Service!";
+  const subject = 'Welcome to Our Service!';
   const html = getWelcomeEmailHtml(name);
 
   sendEmail({
@@ -85,7 +85,7 @@ export const sendLoginAlertEmail = (
   ip: string,
   device: string
 ) => {
-  const subject = "Security Alert: New Login to Your Account";
+  const subject = 'Security Alert: New Login to Your Account';
   const html = getLoginAlertEmailHtml(ip, device);
 
   sendEmail({
@@ -101,7 +101,7 @@ export const sendLoginAlertEmail = (
  * @param token - Password reset token
  */
 export const sendPasswordResetEmail = (email: string, token: string) => {
-  const subject = "Password Reset Request";
+  const subject = 'Password Reset Request';
   const html = getPasswordResetEmailHtml(token);
 
   sendEmail({

@@ -1,20 +1,20 @@
-import { Request, Response } from "express";
-import * as notebookService from "../services/notebook.service";
-import ApiError from "../utils/apiError";
-import ApiResponse from "../utils/apiResponse";
-import { asyncHandler } from "../utils/asyncHandler";
+import { Request, Response } from 'express';
+import * as notebookService from '../services/notebook.service';
+import ApiError from '../utils/apiError';
+import ApiResponse from '../utils/apiResponse';
+import { asyncHandler } from '../utils/asyncHandler';
 import {
   buildMongoQuery,
   FieldTypeMap,
   FilterCondition,
-} from "../utils/filter";
+} from '../utils/filter';
 
 const notebookFieldTypeMap: FieldTypeMap = {
-  name: "string",
-  description: "string",
-  isPinned: "boolean",
-  createdAt: "date",
-  updatedAt: "date",
+  name: 'string',
+  description: 'string',
+  isPinned: 'boolean',
+  createdAt: 'date',
+  updatedAt: 'date',
 };
 
 /**
@@ -28,7 +28,7 @@ export const getAllNotebooks = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, notebooks, "Notebooks fetched successfully"));
+      .json(new ApiResponse(200, notebooks, 'Notebooks fetched successfully'));
   }
 );
 
@@ -41,7 +41,7 @@ export const getNotebooksForUser = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.params.userId;
     if (!userId) {
-      throw new ApiError(400, "User ID is required");
+      throw new ApiError(400, 'User ID is required');
     }
 
     const notebooks = await notebookService.getNotebooksForUser(userId);
@@ -68,7 +68,7 @@ export const adminUpdateNotebook = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, notebook, "Notebook updated successfully"));
+      .json(new ApiResponse(200, notebook, 'Notebook updated successfully'));
   }
 );
 
@@ -83,7 +83,7 @@ export const adminDeleteNotebook = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, null, "Notebook deleted successfully"));
+      .json(new ApiResponse(200, null, 'Notebook deleted successfully'));
   }
 );
 
@@ -102,7 +102,7 @@ export const getDeletedNotebooks = asyncHandler(
         new ApiResponse(
           200,
           notebooks,
-          "Deleted notebooks fetched successfully"
+          'Deleted notebooks fetched successfully'
         )
       );
   }
@@ -119,7 +119,7 @@ export const restoreNotebook = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, notebook, "Notebook restored successfully"));
+      .json(new ApiResponse(200, notebook, 'Notebook restored successfully'));
   }
 );
 
@@ -131,12 +131,12 @@ export const restoreNotebook = asyncHandler(
 export const createNotebook = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
-      throw new ApiError(401, "Not authorized");
+      throw new ApiError(401, 'Not authorized');
     }
 
     const { name, description } = req.body;
     if (!name) {
-      throw new ApiError(400, "Notebook name is required");
+      throw new ApiError(400, 'Notebook name is required');
     }
 
     const notebook = await notebookService.createNotebook(
@@ -146,7 +146,7 @@ export const createNotebook = asyncHandler(
 
     res
       .status(201)
-      .json(new ApiResponse(201, notebook, "Notebook created successfully"));
+      .json(new ApiResponse(201, notebook, 'Notebook created successfully'));
   }
 );
 
@@ -158,14 +158,14 @@ export const createNotebook = asyncHandler(
 export const getMyNotebooks = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
-      throw new ApiError(401, "Not authorized");
+      throw new ApiError(401, 'Not authorized');
     }
 
     const notebooks = await notebookService.getMyNotebooks(req.user._id);
 
     res
       .status(200)
-      .json(new ApiResponse(200, notebooks, "Notebooks fetched successfully"));
+      .json(new ApiResponse(200, notebooks, 'Notebooks fetched successfully'));
   }
 );
 
@@ -177,7 +177,7 @@ export const getMyNotebooks = asyncHandler(
 export const getMyNotebookById = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
-      throw new ApiError(401, "Not authorized");
+      throw new ApiError(401, 'Not authorized');
     }
 
     const notebook = await notebookService.getMyNotebookById(
@@ -187,7 +187,7 @@ export const getMyNotebookById = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, notebook, "Notebook fetched successfully"));
+      .json(new ApiResponse(200, notebook, 'Notebook fetched successfully'));
   }
 );
 
@@ -199,7 +199,7 @@ export const getMyNotebookById = asyncHandler(
 export const updateMyNotebookById = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
-      throw new ApiError(401, "Not authorized");
+      throw new ApiError(401, 'Not authorized');
     }
 
     const notebook = await notebookService.updateMyNotebook(
@@ -210,7 +210,7 @@ export const updateMyNotebookById = asyncHandler(
 
     res
       .status(200)
-      .json(new ApiResponse(200, notebook, "Notebook updated successfully"));
+      .json(new ApiResponse(200, notebook, 'Notebook updated successfully'));
   }
 );
 
@@ -222,14 +222,14 @@ export const updateMyNotebookById = asyncHandler(
 export const deleteMyNotebookById = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
-      throw new ApiError(401, "Not authorized");
+      throw new ApiError(401, 'Not authorized');
     }
 
     await notebookService.deleteMyNotebook(req.params.id, req.user._id);
 
     res
       .status(200)
-      .json(new ApiResponse(200, null, "Notebook deleted successfully"));
+      .json(new ApiResponse(200, null, 'Notebook deleted successfully'));
   }
 );
 
@@ -241,7 +241,7 @@ export const deleteMyNotebookById = asyncHandler(
 export const searchMyNotebooks = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
-      throw new ApiError(401, "Not authorized");
+      throw new ApiError(401, 'Not authorized');
     }
 
     const { filter }: { filter: FilterCondition[] } = req.body;
@@ -262,7 +262,7 @@ export const searchMyNotebooks = asyncHandler(
         new ApiResponse(
           200,
           notebooks,
-          "Filtered notebooks fetched successfully"
+          'Filtered notebooks fetched successfully'
         )
       );
   }
@@ -292,7 +292,7 @@ export const adminSearchAllNotebooks = asyncHandler(
         new ApiResponse(
           200,
           notebooks,
-          "Filtered notebooks fetched successfully"
+          'Filtered notebooks fetched successfully'
         )
       );
   }
@@ -324,7 +324,7 @@ export const adminSearchNotebooksForUser = asyncHandler(
         new ApiResponse(
           200,
           notebooks,
-          "Filtered notebooks fetched successfully"
+          'Filtered notebooks fetched successfully'
         )
       );
   }

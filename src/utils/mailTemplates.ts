@@ -1,4 +1,4 @@
-import { Config } from "../config";
+import { Config } from '../config';
 
 /**
  * A wrapper for all emails
@@ -13,7 +13,7 @@ const htmlTemplate = (subject: string, content: string): string => {
       ${content}
 
       <p style="margin-top: 20px;">Cheers,<br>The ${
-        Config.MAIL_FROM || "App Team"
+        Config.MAIL_FROM || 'App Team'
       }</p>
 
       <div style="margin-top: 25px; text-align: center; font-size: 12px; color: #999;">
@@ -29,7 +29,7 @@ const htmlTemplate = (subject: string, content: string): string => {
  * @param name - The user's name.
  */
 export const getWelcomeEmailHtml = (name: string): string => {
-  const subject = "Welcome to Our App!";
+  const subject = 'Welcome to Our App!';
   const content = `
     <p>We are thrilled to have you on board, <strong>${name}</strong>!</p>
     <p>You've successfully registered your account. You can now start using all our features.</p>
@@ -44,7 +44,7 @@ export const getWelcomeEmailHtml = (name: string): string => {
  * @param device - The User-Agent string (simple device info).
  */
 export const getLoginAlertEmailHtml = (ip: string, device: string): string => {
-  const subject = "Security Alert: New Login to Your Account";
+  const subject = 'Security Alert: New Login to Your Account';
   const content = `
     <p>We detected a new login to your account with the following details:</p>
     <ul>
@@ -63,7 +63,7 @@ export const getLoginAlertEmailHtml = (ip: string, device: string): string => {
  * @param token - The plain-text reset token.
  */
 export const getPasswordResetEmailHtml = (token: string): string => {
-  const subject = "Your Password Reset Request";
+  const subject = 'Your Password Reset Request';
   const resetUrl = `${Config.FRONTEND_URL}/reset-password?token=${token}`;
 
   const content = `

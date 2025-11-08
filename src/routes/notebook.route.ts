@@ -1,8 +1,8 @@
-import { Router } from "express";
-import * as noteController from "../controllers/note.controller";
-import * as notebookController from "../controllers/notebook.controller";
-import { authorizeRoles, protect } from "../middlewares/auth.middleware";
-import { UserRole } from "../models/user.model";
+import { Router } from 'express';
+import * as noteController from '../controllers/note.controller';
+import * as notebookController from '../controllers/notebook.controller';
+import { authorizeRoles, protect } from '../middlewares/auth.middleware';
+import { UserRole } from '../models/user.model';
 
 const router = Router();
 
@@ -39,7 +39,7 @@ router.use(protect);
  *         $ref: '#/components/responses/ForbiddenError'
  */
 router.get(
-  "/all/notebooks",
+  '/all/notebooks',
   authorizeRoles(UserRole.ADMIN),
   notebookController.getAllNotebooks
 );
@@ -73,7 +73,7 @@ router.get(
  *         $ref: '#/components/responses/ForbiddenError'
  */
 router.get(
-  "/all/deleted",
+  '/all/deleted',
   authorizeRoles(UserRole.ADMIN),
   notebookController.getDeletedNotebooks
 );
@@ -115,7 +115,7 @@ router.get(
  *         $ref: '#/components/responses/ForbiddenError'
  */
 router.post(
-  "/admin/search",
+  '/admin/search',
   authorizeRoles(UserRole.ADMIN),
   notebookController.adminSearchAllNotebooks
 );
@@ -185,7 +185,7 @@ router.post(
  *         $ref: '#/components/responses/UnauthorizedError'
  */
 router
-  .route("/")
+  .route('/')
   .post(notebookController.createNotebook)
   .get(notebookController.getMyNotebooks);
 
@@ -227,7 +227,7 @@ router
  *       "401":
  *         $ref: '#/components/responses/UnauthorizedError'
  */
-router.post("/search", notebookController.searchMyNotebooks);
+router.post('/search', notebookController.searchMyNotebooks);
 
 /**
  * @swagger
@@ -300,7 +300,7 @@ router.post("/search", notebookController.searchMyNotebooks);
  *               $ref: '#/components/schemas/ApiError'
  */
 router
-  .route("/:notebookId/notes")
+  .route('/:notebookId/notes')
   .post(noteController.createNote)
   .get(noteController.getNotesInNotebook);
 
@@ -343,7 +343,7 @@ router
  *         $ref: '#/components/responses/NotFoundError'
  */
 router.post(
-  "/:notebookId/notes/search",
+  '/:notebookId/notes/search',
   noteController.searchMyNotesInNotebook
 );
 
@@ -383,7 +383,7 @@ router.post(
  *               $ref: '#/components/schemas/ApiError'
  */
 router.put(
-  "/:id/restore",
+  '/:id/restore',
   authorizeRoles(UserRole.ADMIN),
   notebookController.restoreNotebook
 );
@@ -450,7 +450,7 @@ router.put(
  *         $ref: '#/components/responses/NotFoundError'
  */
 router
-  .route("/admin/:id")
+  .route('/admin/:id')
   .put(authorizeRoles(UserRole.ADMIN), notebookController.adminUpdateNotebook)
   .delete(
     authorizeRoles(UserRole.ADMIN),
@@ -541,7 +541,7 @@ router
  *         $ref: '#/components/responses/NotFoundError'
  */
 router
-  .route("/:id")
+  .route('/:id')
   .get(notebookController.getMyNotebookById)
   .put(notebookController.updateMyNotebookById)
   .delete(notebookController.deleteMyNotebookById);

@@ -1,41 +1,41 @@
 export const NotebookSchema = {
-  type: "object",
+  type: 'object',
   properties: {
-    id: { type: "string", format: "uuid" },
-    name: { type: "string", example: "Work Projects" },
+    id: { type: 'string', format: 'uuid' },
+    name: { type: 'string', example: 'Work Projects' },
     description: {
-      type: "string",
-      example: "My work-related notes.",
+      type: 'string',
+      example: 'My work-related notes.',
       nullable: true,
     },
-    isPinned: { type: "boolean", example: false },
-    user: { $ref: "#/components/schemas/User" },
-    createdAt: { type: "string", format: "date-time" },
-    updatedAt: { type: "string", format: "date-time" },
+    isPinned: { type: 'boolean', example: false },
+    user: { $ref: '#/components/schemas/User' },
+    createdAt: { type: 'string', format: 'date-time' },
+    updatedAt: { type: 'string', format: 'date-time' },
   },
 };
 
 export const CreateNotebookBody = {
-  type: "object",
+  type: 'object',
   properties: {
-    name: { type: "string", example: "Work Projects" },
+    name: { type: 'string', example: 'Work Projects' },
     description: {
-      type: "string",
-      example: "My work-related notes.",
+      type: 'string',
+      example: 'My work-related notes.',
       nullable: true,
     },
   },
-  required: ["name"],
+  required: ['name'],
 };
 
 export const UpdateNotebookBody = {
-  type: "object",
+  type: 'object',
   properties: {
-    name: { type: "string", example: "Work Projects" },
+    name: { type: 'string', example: 'Work Projects' },
     description: {
-      type: "string",
-      example: "My work-related notes.",
+      type: 'string',
+      example: 'My work-related notes.',
     },
-    isPinned: { type: "boolean", example: true },
+    isPinned: { type: 'boolean', example: true },
   },
 };

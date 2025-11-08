@@ -1,10 +1,10 @@
-import mongoose from "mongoose";
-import logger from "../utils/logger";
-import { Config } from "./index";
+import mongoose from 'mongoose';
+import logger from '../utils/logger';
+import { Config } from './index';
 
 export const connectDB = async () => {
   if (!Config.DB_URI) {
-    logger.error("[Error] Database URI is not defined in the configuration.");
+    logger.error('[Error] Database URI is not defined in the configuration.');
     process.exit(1);
   }
 

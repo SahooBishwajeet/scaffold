@@ -1,26 +1,26 @@
-import crypto from "crypto";
-import UserModel, { IUser } from "../models/user.model";
-import ApiError from "../utils/apiError";
+import crypto from 'crypto';
+import UserModel, { IUser } from '../models/user.model';
+import ApiError from '../utils/apiError';
 import {
   IJwtPayload,
   signAccessToken,
   signRefreshToken,
   verifyRefreshToken,
-} from "../utils/jwt";
+} from '../utils/jwt';
 import {
   sendLoginAlertEmail,
   sendPasswordResetEmail,
   sendWelcomeEmail,
-} from "./mail.service";
+} from './mail.service';
 
 interface IAuthResponse {
-  user: Omit<IUser, "comparePassword">;
+  user: Omit<IUser, 'comparePassword'>;
   accessToken: string;
   refreshToken: string;
 }
 
 const hashToken = (token: string) => {
-  return crypto.createHash("sha256").update(token).digest("hex");
+  return crypto.createHash('sha256').update(token).digest('hex');
 };
 
 const generateAndSaveTokens = async (user: IUser): Promise<IAuthResponse> => {
@@ -48,17 +48,17 @@ const generateAndSaveTokens = async (user: IUser): Promise<IAuthResponse> => {
  * @returns The new user and JWT tokens
  */
 export const register = async (
-  userData: Pick<IUser, "name" | "email" | "password">
+  userData: Pick<IUser, 'name' | 'email' | 'password'>
 ): Promise<IAuthResponse> => {
   const { name, email, password } = userData;
 
   if (!name || !email || !password) {
-    throw new ApiError(400, "Name, email, and password are required");
+    throw new ApiError(400, 'Name, email, and password are required');
   }
 
   const existingUser = await UserModel.findOne({ email });
   if (existingUser) {
-    throw new ApiError(409, "User with this email already exists");
+    throw new ApiError(409, 'User with this email already exists');
   }
 
   const newUser = new UserModel({
@@ -82,21 +82,21 @@ export const register = async (
  * @returns The user and JWT tokens
  */
 export const login = async (
-  credentials: Pick<IUser, "email" | "password">,
+  credentials: Pick<IUser, 'email' | 'password'>,
   loginInfo: { ip: string; userAgent: string }
 ): Promise<IAuthResponse> => {
   const { email, password } = credentials;
 
   if (!email || !password) {
-    throw new ApiError(400, "Email and password are required");
+    throw new ApiError(400, 'Email and password are required');
   }
 
   const user = await UserModel.findOne({ email }).select(
-    "+password +refreshToken"
+    '+password +refreshToken'
   );
 
   if (!user || !(await user.comparePassword(password))) {
-    throw new ApiError(401, "Invalid email or password");
+    throw new ApiError(401, 'Invalid email or password');
   }
 
   // -- Send login alert email --
@@ -114,7 +114,7 @@ export const refreshAccessToken = async (
   incomingRefreshToken: string
 ): Promise<string> => {
   if (!incomingRefreshToken) {
-    throw new ApiError(400, "No refresh token provided");
+    throw new ApiError(400, 'No refresh token provided');
   }
 
   const payload = verifyRefreshToken(incomingRefreshToken);
@@ -127,7 +127,7 @@ export const refreshAccessToken = async (
   });
 
   if (!user) {
-    throw new ApiError(401, "Invalid or expired refresh token");
+    throw new ApiError(401, 'Invalid or expired refresh token');
   }
 
   const newAccessToken = signAccessToken({
@@ -168,7 +168,7 @@ export const forgotPasswordService = async (email: string): Promise<void> => {
     return;
   }
 
-  const plainToken = crypto.randomBytes(32).toString("hex");
+  const plainToken = crypto.randomBytes(32).toString('hex');
   const hashedToken = hashToken(plainToken);
 
   const validityDuration = 10 * 60 * 1000; // 10 minutes
@@ -184,7 +184,7 @@ export const forgotPasswordService = async (email: string): Promise<void> => {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save();
-    throw new ApiError(500, "Error sending password reset email");
+    throw new ApiError(500, 'Error sending password reset email');
   }
 };
 
@@ -205,7 +205,7 @@ export const resetPasswordService = async (
   });
 
   if (!user) {
-    throw new ApiError(400, "Invalid or expired password reset token");
+    throw new ApiError(400, 'Invalid or expired password reset token');
   }
 
   user.password = newPassword;

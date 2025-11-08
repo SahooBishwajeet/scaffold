@@ -1,5 +1,5 @@
-import winston from "winston";
-import { Config } from "../config";
+import winston from 'winston';
+import { Config } from '../config';
 
 const levels = {
   error: 0,
@@ -10,17 +10,17 @@ const levels = {
 };
 
 const colors = {
-  error: "red",
-  warn: "yellow",
-  info: "green",
-  http: "magenta",
-  debug: "white",
+  error: 'red',
+  warn: 'yellow',
+  info: 'green',
+  http: 'magenta',
+  debug: 'white',
 };
 winston.addColors(colors);
 
 // -- Log Format --
 const format = winston.format.combine(
-  winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:ms" }),
+  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
 
   Config.IS_PRODUCTION
     ? winston.format.uncolorize()
@@ -33,26 +33,26 @@ const format = winston.format.combine(
 // -- Transports --
 const transports = [
   new winston.transports.Console({
-    level: Config.IS_PRODUCTION ? "http" : "debug",
+    level: Config.IS_PRODUCTION ? 'http' : 'debug',
   }),
 
   // In production file logs
   ...(Config.IS_PRODUCTION
     ? [
         new winston.transports.File({
-          filename: "logs/error.log",
-          level: "error",
+          filename: 'logs/error.log',
+          level: 'error',
         }),
         new winston.transports.File({
-          filename: "logs/all.log",
-          level: "http",
+          filename: 'logs/all.log',
+          level: 'http',
         }),
       ]
     : []),
 ];
 
 const logger = winston.createLogger({
-  level: "debug",
+  level: 'debug',
   levels,
   format,
   transports,

@@ -1,14 +1,14 @@
-import bcrypt from "bcryptjs";
-import { Schema, model } from "mongoose";
+import bcrypt from 'bcryptjs';
+import { Schema, model } from 'mongoose';
 import MongooseDelete, {
   SoftDeleteDocument,
   SoftDeleteModel,
-} from "mongoose-delete";
-import { Config } from "../config";
+} from 'mongoose-delete';
+import { Config } from '../config';
 
 export enum UserRole {
-  USER = "user",
-  ADMIN = "admin",
+  USER = 'user',
+  ADMIN = 'admin',
 }
 
 export interface IUser extends SoftDeleteDocument {
@@ -33,24 +33,24 @@ const userSchema = new Schema<IUser>(
     },
     name: {
       type: String,
-      required: [true, "Name is required"],
+      required: [true, 'Name is required'],
       trim: true,
     },
     email: {
       type: String,
-      required: [true, "Email is required"],
+      required: [true, 'Email is required'],
       unique: true,
       trim: true,
       lowercase: true,
-      match: [/.+\@.+\..+/, "Please fill a valid email address"],
+      match: [/.+\@.+\..+/, 'Please fill a valid email address'],
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
-      minlength: [8, "Password must be at least 8 characters long"],
+      required: [true, 'Password is required'],
+      minlength: [8, 'Password must be at least 8 characters long'],
       match: [
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-        "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character",
+        'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
       ],
       select: false,
     },
@@ -95,8 +95,8 @@ const userSchema = new Schema<IUser>(
 );
 
 // -- Pre-Save Hook to hash & save password --
-userSchema.pre<IUser>("save", async function (next) {
-  if (!this.isModified("password") || !this.password) {
+userSchema.pre<IUser>('save', async function (next) {
+  if (!this.isModified('password') || !this.password) {
     return next();
   }
 
@@ -113,7 +113,7 @@ userSchema.pre<IUser>("save", async function (next) {
 userSchema.methods.comparePassword = async function (
   candidatePassword: string
 ): Promise<boolean> {
-  const user = await UserModel.findById(this._id).select("+password").exec();
+  const user = await UserModel.findById(this._id).select('+password').exec();
   if (!user || !user.password) {
     return false;
   }
@@ -122,10 +122,10 @@ userSchema.methods.comparePassword = async function (
 
 // -- Plugin for Soft Delete --
 userSchema.plugin(MongooseDelete, {
-  overrideMethods: "all", // Makes find(), findOne(), etc. exclude deleted docs
+  overrideMethods: 'all', // Makes find(), findOne(), etc. exclude deleted docs
   deletedAt: true, // Adds a deletedAt field
   deletedBy: false,
 });
 
-const UserModel = model<IUser, SoftDeleteModel<IUser>>("User", userSchema);
+const UserModel = model<IUser, SoftDeleteModel<IUser>>('User', userSchema);
 export default UserModel;

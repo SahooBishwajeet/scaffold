@@ -1,12 +1,12 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
-  preset: "ts-jest",
+  preset: 'ts-jest',
 
-  testEnvironment: "node",
+  testEnvironment: 'node',
 
-  testMatch: ["**/**/*.test.ts"],
+  testMatch: ['**/**/*.test.ts'],
 
-  setupFilesAfterEnv: ["./src/tests/setup.ts"],
+  setupFilesAfterEnv: ['./src/tests/setup.ts'],
 
   bail: 1,
 

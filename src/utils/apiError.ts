@@ -6,7 +6,7 @@ class ApiError extends Error {
     statusCode: number,
     message: string,
     isOperational = true,
-    stack = ""
+    stack = ''
   ) {
     super(message);
     this.statusCode = statusCode;

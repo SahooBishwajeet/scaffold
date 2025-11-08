@@ -1,80 +1,80 @@
-import path from "path";
-import swaggerJSDoc from "swagger-jsdoc";
-import { Config } from ".";
+import path from 'path';
+import swaggerJSDoc from 'swagger-jsdoc';
+import { Config } from '.';
 import {
   ForgotPasswordBody,
   LoginBody,
   RegisterBody,
   ResetPasswordBody,
-} from "../docs/auth.schema";
-import { FilterConditionSchema } from "../docs/filterCondtition.schema";
+} from '../docs/auth.schema';
+import { FilterConditionSchema } from '../docs/filterCondtition.schema';
 import {
   CreateNoteBody,
   MoveNoteBody,
   NoteSchema,
   UpdateNoteBody,
-} from "../docs/note.schema";
+} from '../docs/note.schema';
 import {
   CreateNotebookBody,
   NotebookSchema,
   UpdateNotebookBody,
-} from "../docs/notebook.schema";
-import { parameters } from "../docs/parameters";
-import { responses } from "../docs/responses";
+} from '../docs/notebook.schema';
+import { parameters } from '../docs/parameters';
+import { responses } from '../docs/responses';
 import {
   AdminUpdateUserBody,
   ChangePasswordBody,
   UpdateProfileBody,
   UserSchema,
-} from "../docs/user.schema";
+} from '../docs/user.schema';
 
 const options: swaggerJSDoc.Options = {
   definition: {
-    openapi: "3.0.0",
+    openapi: '3.0.0',
     info: {
-      title: "Backend Template API",
-      version: "1.0.0",
-      description: "API documentation for the Backend Template project",
+      title: 'Backend Template API',
+      version: '1.0.0',
+      description: 'API documentation for the Backend Template project',
     },
     servers: [
       {
         url: `http://localhost:${Config.PORT}${Config.API_PREFIX}`,
-        description: "Local Development Server (API)",
+        description: 'Local Development Server (API)',
       },
       {
         url: `http://localhost:${Config.PORT}`,
-        description: "Local Development Server (Root)",
+        description: 'Local Development Server (Root)',
       },
     ],
     components: {
       securitySchemes: {
         bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT",
-          description: "Enter your JWT Access Token",
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Enter your JWT Access Token',
         },
       },
       schemas: {
         ApiError: {
-          type: "object",
+          type: 'object',
           properties: {
             success: {
-              type: "boolean",
+              type: 'boolean',
               example: false,
             },
             message: {
-              type: "string",
-              example: "Something went wrong",
+              type: 'string',
+              example: 'Something went wrong',
             },
           },
         },
         NotFound: {
-          type: "object",
+          type: 'object',
           properties: {
             message: {
-              type: "string",
-              example: "Route Not Found",
+              type: 'string',
+              example: 'Route Not Found',
             },
           },
         },
@@ -83,12 +83,12 @@ const options: swaggerJSDoc.Options = {
         Note: NoteSchema,
         FilterCondition: FilterConditionSchema,
         SearchBody: {
-          type: "object",
+          type: 'object',
           properties: {
             filters: {
-              type: "array",
+              type: 'array',
               items: {
-                $ref: "#/components/schemas/FilterCondition",
+                $ref: '#/components/schemas/FilterCondition',
               },
             },
           },
@@ -118,8 +118,8 @@ const options: swaggerJSDoc.Options = {
     ],
   },
   apis: [
-    path.resolve(__dirname, "../routes/**/*.{ts,js}"),
-    path.resolve(__dirname, "../app.{ts,js}"),
+    path.resolve(__dirname, '../routes/**/*.{ts,js}'),
+    path.resolve(__dirname, '../app.{ts,js}'),
   ],
 };
 
