@@ -1,0 +1,24 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: backend_template_logs
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+    relabel_configs:
+      - source_labels: [__meta_docker_container_name]
+        regex: /backend_template_api
+        action: keep
+
+      - source_labels: [__meta_docker_container_name]
+        target_label: container
+        regex: /(.+)
+        replacement: ${1}
+
+      - target_label: job
+        replacement: backend_template_api

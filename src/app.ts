@@ -4,6 +4,7 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 import { Config } from './config';
+import { metricsHandler } from './config/metrics';
 import { swaggerSpecs } from './config/swagger';
 import { generalLimiter } from './middlewares/rateLimiter';
 import { requestLogger } from './middlewares/requestLogger';
@@ -83,6 +84,8 @@ app.get('/health', (req: Request, res: Response) => {
     uptime: process.uptime(),
   });
 });
+
+app.get('/metrics', metricsHandler);
 
 // API Routes
 app.use(Config.API_PREFIX, generalLimiter);
