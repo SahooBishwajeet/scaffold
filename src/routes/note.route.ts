@@ -1,7 +1,14 @@
 import { Router } from 'express';
 import * as noteController from '../controllers/note.controller';
 import { authorizeRoles, protect } from '../middlewares/auth.middleware';
+import { validate } from '../middlewares/joi.middleware';
 import { UserRole } from '../models/user.model';
+import { searchSchema } from '../validators/common.validator';
+import {
+  moveNoteSchema,
+  noteIdParamSchema,
+  updateNoteSchema,
+} from '../validators/note.validator';
 
 const router = Router();
 
@@ -116,6 +123,7 @@ router.get(
 router.post(
   '/admin/search',
   authorizeRoles(UserRole.ADMIN),
+  validate(searchSchema),
   noteController.adminSearchAllNotes
 );
 
@@ -183,7 +191,7 @@ router.get('/', noteController.getAllMyNotes);
  *       "401":
  *         $ref: '#/components/responses/UnauthorizedError'
  */
-router.post('/search', noteController.searchMyNotes);
+router.post('/search', validate(searchSchema), noteController.searchMyNotes);
 
 /**
  * @swagger
@@ -229,7 +237,12 @@ router.post('/search', noteController.searchMyNotes);
  *             schema:
  *               $ref: '#/components/schemas/ApiError'
  */
-router.put('/:noteId/move', noteController.moveMyNote);
+router.put(
+  '/:noteId/move',
+  validate(noteIdParamSchema, 'params'),
+  validate(moveNoteSchema),
+  noteController.moveMyNote
+);
 
 // -- Admin-only routes (Parameterized) --
 
@@ -270,6 +283,7 @@ router.put('/:noteId/move', noteController.moveMyNote);
 router.put(
   '/:noteId/restore',
   authorizeRoles(UserRole.ADMIN),
+  validate(noteIdParamSchema, 'params'),
   noteController.restoreNote
 );
 
@@ -362,9 +376,22 @@ router.put(
  */
 router
   .route('/admin/:noteId')
-  .get(authorizeRoles(UserRole.ADMIN), noteController.adminGetNoteById)
-  .put(authorizeRoles(UserRole.ADMIN), noteController.adminUpdateNote)
-  .delete(authorizeRoles(UserRole.ADMIN), noteController.adminDeleteNote);
+  .get(
+    authorizeRoles(UserRole.ADMIN),
+    validate(noteIdParamSchema, 'params'),
+    noteController.adminGetNoteById
+  )
+  .put(
+    authorizeRoles(UserRole.ADMIN),
+    validate(noteIdParamSchema, 'params'),
+    validate(updateNoteSchema),
+    noteController.adminUpdateNote
+  )
+  .delete(
+    authorizeRoles(UserRole.ADMIN),
+    validate(noteIdParamSchema, 'params'),
+    noteController.adminDeleteNote
+  );
 
 // -- User routes (Parameterized) --
 
@@ -451,8 +478,12 @@ router
  */
 router
   .route('/:noteId')
-  .get(noteController.getMyNoteById)
-  .put(noteController.updateMyNote)
-  .delete(noteController.deleteMyNote);
+  .get(validate(noteIdParamSchema, 'params'), noteController.getMyNoteById)
+  .put(
+    validate(noteIdParamSchema, 'params'),
+    validate(updateNoteSchema),
+    noteController.updateMyNote
+  )
+  .delete(validate(noteIdParamSchema, 'params'), noteController.deleteMyNote);
 
 export default router;
