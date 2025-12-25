@@ -3,7 +3,16 @@ import * as noteController from '../controllers/note.controller';
 import * as notebookController from '../controllers/notebook.controller';
 import * as userController from '../controllers/user.controller';
 import { authorizeRoles, protect } from '../middlewares/auth.middleware';
+import { validate } from '../middlewares/joi.middleware';
 import { UserRole } from '../models/user.model';
+import { searchSchema } from '../validators/common.validator';
+import {
+  adminUpdateUserSchema,
+  changePasswordSchema,
+  updateProfileSchema,
+  userIdNestedParamSchema,
+  userIdParamSchema,
+} from '../validators/user.validator';
 
 const router = Router();
 
@@ -99,7 +108,7 @@ router.use(protect);
 router
   .route('/me')
   .get(userController.getMe)
-  .put(userController.updateMyProfile)
+  .put(validate(updateProfileSchema), userController.updateMyProfile)
   .delete(userController.deleteMyAccount);
 
 /**
@@ -148,7 +157,11 @@ router
  *             schema:
  *               $ref: '#/components/schemas/ApiError'
  */
-router.put('/me/password', userController.changeMyPassword);
+router.put(
+  '/me/password',
+  validate(changePasswordSchema),
+  userController.changeMyPassword
+);
 
 // --- Admin-only routes ---
 router.use(authorizeRoles(UserRole.ADMIN));
@@ -261,7 +274,7 @@ router.get('/deleted', userController.getDeletedUsers);
  *       "403":
  *         $ref: '#/components/responses/ForbiddenError'
  */
-router.post('/search', userController.adminSearchUsers);
+router.post('/search', validate(searchSchema), userController.adminSearchUsers);
 
 /**
  * @swagger
@@ -297,7 +310,11 @@ router.post('/search', userController.adminSearchUsers);
  *               schema:
  *                 $ref: '#/components/schemas/ApiError'
  */
-router.put('/:id/restore', userController.restoreUser);
+router.put(
+  '/:id/restore',
+  validate(userIdParamSchema, 'params'),
+  userController.restoreUser
+);
 
 /**
  * @swagger
@@ -383,6 +400,8 @@ router.get('/:userId/notebooks', notebookController.getNotebooksForUser);
  */
 router.post(
   '/:userId/notebooks/search',
+  validate(userIdNestedParamSchema, 'params'),
+  validate(searchSchema),
   notebookController.adminSearchNotebooksForUser
 );
 
@@ -468,7 +487,12 @@ router.get('/:userId/notes', noteController.getNotesForUser);
  *       "404":
  *         $ref: '#/components/responses/NotFoundError'
  */
-router.post('/:userId/notes/search', noteController.adminSearchNotesForUser);
+router.post(
+  '/:userId/notes/search',
+  validate(userIdNestedParamSchema, 'params'),
+  validate(searchSchema),
+  noteController.adminSearchNotesForUser
+);
 
 /**
  * @swagger
@@ -582,8 +606,12 @@ router.post('/:userId/notes/search', noteController.adminSearchNotesForUser);
  */
 router
   .route('/:id')
-  .get(userController.getUserById)
-  .put(userController.updateUser)
-  .delete(userController.deleteUser);
+  .get(validate(userIdParamSchema, 'params'), userController.getUserById)
+  .put(
+    validate(userIdParamSchema, 'params'),
+    validate(adminUpdateUserSchema),
+    userController.updateUser
+  )
+  .delete(validate(userIdParamSchema, 'params'), userController.deleteUser);
 
 export default router;
