@@ -2,7 +2,7 @@ import Joi from 'joi';
 
 export const createNoteSchema = Joi.object({
   title: Joi.string().required().trim().min(1).max(200),
-  content: Joi.string().required().trim().min(1),
+  content: Joi.string().required().trim().min(1).optional(),
   tags: Joi.array()
     .items(Joi.string().trim().min(1).max(50))
     .optional()

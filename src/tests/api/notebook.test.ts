@@ -114,7 +114,7 @@ describe('/api/v1/notebooks', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain('name is required');
+      expect(response.body.message).toContain('\"name\" is required');
     });
 
     it("GET /: should get all of the current user's notebooks", async () => {

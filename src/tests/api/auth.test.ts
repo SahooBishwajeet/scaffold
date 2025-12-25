@@ -45,7 +45,7 @@ describe('/api/v1/auth', () => {
       expect(response.status).toBe(400);
       expect(response.body.success).toBe(false);
       expect(response.body.message).toContain(
-        'Name, email, and password are required'
+        '\"email\" is required, \"password\" is required'
       );
     });
 
@@ -87,7 +87,9 @@ describe('/api/v1/auth', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain('Please fill a valid email');
+      expect(response.body.message).toContain(
+        '\"email\" must be a valid email'
+      );
     });
 
     it('should fail registration with weak password', async () => {
@@ -149,9 +151,7 @@ describe('/api/v1/auth', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain(
-        'Email and password are required'
-      );
+      expect(response.body.message).toContain('\"email\" is required');
     });
 
     it('should fail login with a missing password', async () => {
@@ -161,9 +161,7 @@ describe('/api/v1/auth', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain(
-        'Email and password are required'
-      );
+      expect(response.body.message).toContain('\"password\" is required');
     });
   });
 
@@ -284,7 +282,7 @@ describe('/api/v1/auth', () => {
         .send({});
 
       expect(response.status).toBe(400);
-      expect(response.body.message).toContain('Email is required');
+      expect(response.body.message).toContain('\"email\" is required');
     });
   });
 

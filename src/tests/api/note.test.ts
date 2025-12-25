@@ -221,7 +221,7 @@ describe('/api/v1/notes', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain('New notebook ID is required');
+      expect(response.body.message).toContain('\"newNotebookId\" is required');
     });
   });
 
