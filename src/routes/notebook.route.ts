@@ -2,7 +2,16 @@ import { Router } from 'express';
 import * as noteController from '../controllers/note.controller';
 import * as notebookController from '../controllers/notebook.controller';
 import { authorizeRoles, protect } from '../middlewares/auth.middleware';
+import { validate } from '../middlewares/joi.middleware';
 import { UserRole } from '../models/user.model';
+import { searchSchema } from '../validators/common.validator';
+import { createNoteSchema } from '../validators/note.validator';
+import {
+  createNotebookSchema,
+  notebookIdNestedParamSchema,
+  notebookIdParamSchema,
+  updateNotebookSchema,
+} from '../validators/notebook.validator';
 
 const router = Router();
 
@@ -117,6 +126,7 @@ router.get(
 router.post(
   '/admin/search',
   authorizeRoles(UserRole.ADMIN),
+  validate(searchSchema),
   notebookController.adminSearchAllNotebooks
 );
 
@@ -186,7 +196,7 @@ router.post(
  */
 router
   .route('/')
-  .post(notebookController.createNotebook)
+  .post(validate(createNotebookSchema), notebookController.createNotebook)
   .get(notebookController.getMyNotebooks);
 
 /**
@@ -227,7 +237,11 @@ router
  *       "401":
  *         $ref: '#/components/responses/UnauthorizedError'
  */
-router.post('/search', notebookController.searchMyNotebooks);
+router.post(
+  '/search',
+  validate(searchSchema),
+  notebookController.searchMyNotebooks
+);
 
 /**
  * @swagger
@@ -301,8 +315,15 @@ router.post('/search', notebookController.searchMyNotebooks);
  */
 router
   .route('/:notebookId/notes')
-  .post(noteController.createNote)
-  .get(noteController.getNotesInNotebook);
+  .post(
+    validate(notebookIdNestedParamSchema, 'params'),
+    validate(createNoteSchema),
+    noteController.createNote
+  )
+  .get(
+    validate(notebookIdNestedParamSchema, 'params'),
+    noteController.getNotesInNotebook
+  );
 
 /**
  * @swagger
@@ -344,6 +365,8 @@ router
  */
 router.post(
   '/:notebookId/notes/search',
+  validate(notebookIdNestedParamSchema, 'params'),
+  validate(searchSchema),
   noteController.searchMyNotesInNotebook
 );
 
@@ -385,6 +408,7 @@ router.post(
 router.put(
   '/:id/restore',
   authorizeRoles(UserRole.ADMIN),
+  validate(notebookIdParamSchema, 'params'),
   notebookController.restoreNotebook
 );
 
@@ -451,9 +475,15 @@ router.put(
  */
 router
   .route('/admin/:id')
-  .put(authorizeRoles(UserRole.ADMIN), notebookController.adminUpdateNotebook)
+  .put(
+    authorizeRoles(UserRole.ADMIN),
+    validate(notebookIdParamSchema, 'params'),
+    validate(updateNotebookSchema),
+    notebookController.adminUpdateNotebook
+  )
   .delete(
     authorizeRoles(UserRole.ADMIN),
+    validate(notebookIdParamSchema, 'params'),
     notebookController.adminDeleteNotebook
   );
 
@@ -542,8 +572,18 @@ router
  */
 router
   .route('/:id')
-  .get(notebookController.getMyNotebookById)
-  .put(notebookController.updateMyNotebookById)
-  .delete(notebookController.deleteMyNotebookById);
+  .get(
+    validate(notebookIdParamSchema, 'params'),
+    notebookController.getMyNotebookById
+  )
+  .put(
+    validate(notebookIdParamSchema, 'params'),
+    validate(updateNotebookSchema),
+    notebookController.updateMyNotebookById
+  )
+  .delete(
+    validate(notebookIdParamSchema, 'params'),
+    notebookController.deleteMyNotebookById
+  );
 
 export default router;
